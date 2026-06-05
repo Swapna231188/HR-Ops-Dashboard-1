@@ -79,8 +79,6 @@ nav{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 24px;disp
 .eacts{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
 .hbtn{padding:6px 11px;border:1px solid var(--bor);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:var(--sur);color:var(--tx2);display:flex;align-items:center;gap:4px;transition:all .15s;text-decoration:none}
 .hbtn:hover{background:var(--sur2);color:var(--tx)}
-.hbtn.jira{background:var(--bl);color:var(--blu);border-color:#BFDBFE}
-.hbtn.jira:hover{background:#DBEAFE}
 .hbtn.back{background:var(--sur2);border-color:var(--bor2)}
 .hbtn.danger{color:var(--red);border-color:#FECACA}
 .hbtn.danger:hover{background:var(--rl)}
@@ -154,7 +152,6 @@ a.jlnk:hover{text-decoration:underline}
     <span class="nsub">· India Operations · IMC</span>
   </div>
   <div class="nright">
-    <div id="jstatus" class="nbadge" style="display:none"><div class="ndot"></div>Jira connected</div>
     <button class="nibtn" onclick="goHome()" title="Dashboard home">&#8962;</button>
   </div>
 </nav>
@@ -178,7 +175,6 @@ a.jlnk:hover{text-decoration:underline}
 <div id="toasts"></div>
 
 <script>
-const JS="imcfm.atlassian.net",JE="Swapna.sawant@imc.com",JT="ATATT3xFfGF0ImpF3zrxzW0Dz7TW3ueEK7rTVoeg_OLlP5SP9lyw5qYclvR9kOKo3dU4uK6GOux5E_Ip29gQ6it0e_wxnxLVMS9YUfPRlH8sJxHPQ2hHW6B4O4c19YDeChcvULa7xHIisbC1nJ6aYHwfsuSdnG45V5rbbZeji9K-kwK_gZsQ0hI=9CCE671B";
 
 const CL={
 "Local Onboarding":{col:{bg:"#EFF6FF",c:"#1D4ED8",dot:"#2563EB"},phases:[
@@ -345,28 +341,12 @@ function toast(msg,type,dur){
   setTimeout(()=>el.remove(),dur||4500);
 }
 
-async function jFetch(path,method,body){
-  const r=await fetch("https://"+JS+"/rest/api/3/"+path,{method,headers:{"Authorization":"Basic "+btoa(JE+":"+JT),"Content-Type":"application/json","Accept":"application/json"},body:body?JSON.stringify(body):undefined});
-  if(!r.ok)throw new Error(await r.text());
-  return r.json();
-}
 
-async function createJira(e){
-  const key=("IMC"+e.name.replace(/[^A-Za-z]/g,"").toUpperCase().slice(0,3)+Date.now().toString(36).slice(-2)).slice(0,10);
-  toast("Creating Jira project for "+e.name+"...","inf",20000);
-  const proj=await jFetch("project","POST",{key,name:e.name+" - "+e.type,projectTypeKey:"software",projectTemplateKey:"com.pyxis.greenhopper.jira:gh-simplified-agility-scrum",description:"Onboarding checklist for "+e.name+". Type: "+e.type+". DOJ: "+(e.doj||"TBD")});
-  const pk=proj.key;
-  for(const phase of CL[e.type].phases){
-    for(const task of phase.tasks){
-      await jFetch("issue","POST",{fields:{project:{key:pk},summary:"["+phase.name+"] "+task.n+". "+task.t,description:{type:"doc",version:1,content:[{type:"paragraph",content:[{type:"text",text:"Owner: "+task.own+"\nTimeline: "+task.tl+"\nCategory: "+task.cat}]}]},issuetype:{name:"Task"},labels:[task.own.replace(/[\s\/]+/g,"_"),task.cat.replace(/\s+/g,"_")]}});
-    }
-  }
-  return{key:pk,url:"https://"+JS+"/jira/software/projects/"+pk+"/boards"};
-}
 
 function filterEmps(v){qry=v.toLowerCase();renderSidebar();}
 function goHome(){
   sel=null;
+  document.getElementById("main").innerHTML="";
   renderSidebar();
   renderHome();
 }
@@ -398,7 +378,7 @@ function renderHome(){
 
   let html='<div class="hometitle">Dashboard Overview</div>'
     +'<div class="homesub">India Operations · IMC · All employees at a glance</div>'
-    +(location.protocol==='file:'?'<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:11px 14px;font-size:12px;color:#92400E;margin-bottom:16px;line-height:1.6"><strong>Action needed:</strong> Jira integration requires hosting. Drag and drop this file to <a href="https://app.netlify.com/drop" target="_blank" style="color:#92400E;font-weight:600">app.netlify.com/drop</a> for a free live URL — takes 60 seconds. All other features work offline.</div>':'')
+
     +'<div class="statgrid">'
     +'<div class="statcard"><div class="statlbl">Total employees</div><div class="statval">'+totalEmps+'</div></div>'
     +'<div class="statcard"><div class="statlbl">Tasks completed</div><div class="statval grn">'+totalDone+'</div></div>'
@@ -430,7 +410,7 @@ function renderHome(){
     html+='<div class="sectlbl">All employees</div>'
       +'<div class="emptable"><table>'
       +'<thead><tr>'
-      +'<th>Employee</th><th>Checklist type</th><th>DOJ</th><th>Progress</th><th>Tasks</th><th>Jira</th>'
+      +'<th>Employee</th><th>Checklist type</th><th>DOJ</th><th>Progress</th><th>Tasks</th>'
       +'</tr></thead><tbody>';
     keys.forEach(id=>{
       const e=emps[id],a=pal(id),p=pct(e),d=dn(e),tot=tks(e.type).length;
@@ -443,7 +423,7 @@ function renderHome(){
         +'<td style="color:var(--tx2);font-size:12px">'+(e.doj||'—')+'</td>'
         +'<td><div class="tpbar"><div class="tpbartrack"><div class="tpbarfill" style="width:'+p+'%"></div></div><span class="tppct">'+p+'%</span></div></td>'
         +'<td style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--tx2)">'+d+'/'+tot+'</td>'
-        +'<td>'+(e.jiraUrl?'<a href="'+e.jiraUrl+'" target="_blank" class="jlnk" style="font-size:11px;padding:3px 8px;background:var(--bl);border-radius:6px;border:1px solid #BFDBFE" onclick="event.stopPropagation()">Open &#8599;</a>':'<span style="font-size:11px;color:var(--tx3)">—</span>')+'</td>'
+
         +'</tr>';
     });
     html+='</tbody></table></div>';
@@ -463,9 +443,7 @@ function selectEmp(id){
   const phases=CL[e.type].phases;
   const owners=[...new Set(tks(e.type).map(t=>t.own))].length;
 
-  const jBtn=e.jiraUrl
-    ?'<a href="'+e.jiraUrl+'" target="_blank" class="hbtn jira">&#11043; Open in Jira</a>'
-    :'<button class="hbtn jira" onclick="retryJira(\''+id+'\')">&#11043; Create Jira</button>';
+  const jBtn='';
 
   let html='<div class="ehdr">'
     +'<div class="ehrow">'
@@ -520,15 +498,6 @@ function toggle(id,tid){
   save();renderSidebar();selectEmp(id);
 }
 
-async function retryJira(id){
-  const e=emps[id];if(!e)return;
-  try{
-    const{key,url}=await createJira(e);
-    e.jiraProjKey=key;e.jiraUrl=url;save();
-    toast('Jira project '+key+' created! <a href="'+url+'" target="_blank" class="jlnk">Open &#8599;</a>','ok',8000);
-    selectEmp(id);
-  }catch(err){toast('Jira error: '+err.message,'err',8000);}
-}
 
 function showAdd(){
   document.getElementById("modinner").innerHTML=
@@ -541,9 +510,8 @@ function showAdd(){
     +'<option>Local Onboarding</option><option>International Incoming</option>'
     +'<option>Local Offboarding</option><option>International Outgoing</option>'
     +'</select></div>'
-    +'<div class="ibox blue">&#11043; A Jira project will be created automatically at imcfm.atlassian.net with all tasks as issues.</div>'
     +'<div class="mbtns"><button class="mbtn" onclick="closeMod()">Cancel</button>'
-    +'<button class="mbtn pri" id="addsub" onclick="addEmp()">+ Add &amp; create Jira project</button></div>';
+    +'<button class="mbtn pri" id="addsub" onclick="addEmp()">+ Add employee</button></div>';
   document.getElementById("modal").classList.add("op");
 }
 
@@ -560,19 +528,14 @@ function showEdit(id){
   document.getElementById("modal").classList.add("op");
 }
 
-async function addEmp(){
+function addEmp(){
   const name=document.getElementById("mn").value.trim();if(!name)return;
   const btn=document.getElementById("addsub");
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Creating Jira project...';
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Adding...';
   const id=uid();
-  const e={name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value,type:document.getElementById("mt").value,checks:{},jiraProjKey:null,jiraUrl:null};
+  const e={name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value,type:document.getElementById("mt").value,checks:{}};
   emps[id]=e;
-  try{
-    const{key,url}=await createJira(e);
-    e.jiraProjKey=key;e.jiraUrl=url;
-    toast('Jira project '+key+' created! <a href="'+url+'" target="_blank" class="jlnk">Open &#8599;</a>','ok',8000);
-  }catch(err){toast('Employee added but Jira failed: '+err.message,'err',8000);}
-  save();closeMod();sel=id;renderSidebar();selectEmp(id);renderSidebar();
+  save();closeMod();sel=id;renderSidebar();selectEmp(id);
 }
 
 function saveEdit(id){
@@ -582,20 +545,15 @@ function saveEdit(id){
 }
 
 function delEmp(id){
-  if(!confirm('Remove this employee? Their Jira project will remain on imcfm.atlassian.net.'))return;
+  if(!confirm('Remove this employee? This cannot be undone.'))return;
   delete emps[id];if(sel===id)sel=null;save();renderSidebar();renderHome();
 }
 
 function closeMod(){document.getElementById("modal").classList.remove("op");}
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeMod();});
 
-load();
-renderSidebar();
-renderHome();
-// Show Jira badge only when hosted (not local file)
-if(location.protocol!=='file:'){
-  document.getElementById('jstatus').style.display='flex';
-}
+load();renderSidebar();renderHome();
+
 </script>
 </body>
 </html>
