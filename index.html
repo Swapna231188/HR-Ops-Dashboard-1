@@ -6,554 +6,696 @@
 <title>IMC Onboarding Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F7F6F3;--sur:#fff;--sur2:#F0EEE9;--bor:#E4E1DA;--bor2:#D0CCC3;--tx:#1A1917;--tx2:#6B6860;--tx3:#9E9B94;--grn:#1D9E75;--gl:#E1F5EE;--gm:#9FE1CB;--blu:#2563EB;--bl:#EFF6FF;--pur:#7C3AED;--pl:#F5F3FF;--red:#DC2626;--rl:#FEF2F2;--r:10px;--rl:14px;--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 16px rgba(0,0,0,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
-nav{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
-.nlogo{width:28px;height:28px;background:var(--tx);border-radius:7px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+body{font-family:'DM Sans',sans-serif;background:#F7F6F3;color:#1A1917;min-height:100vh}
+nav{background:#fff;border-bottom:1px solid #E4E1DA;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100}
+.nlogo{width:28px;height:28px;background:#1A1917;border-radius:7px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .ntitle{font-size:14px;font-weight:600;margin-left:9px}
-.nsub{font-size:11px;color:var(--tx3);margin-left:4px}
+.nsub{font-size:11px;color:#9E9B94;margin-left:4px}
 .nbrand{display:flex;align-items:center}
-.nright{display:flex;align-items:center;gap:8px}
-.nbadge{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);background:var(--sur2);border:1px solid var(--bor);padding:4px 10px;border-radius:20px}
-.ndot{width:6px;height:6px;border-radius:50%;background:var(--grn)}
-.nibtn{width:32px;height:32px;border-radius:8px;border:1px solid var(--bor);background:var(--sur);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx2);font-size:16px;transition:background .15s}
-.nibtn:hover{background:var(--sur2)}
-.lay{display:grid;grid-template-columns:256px 1fr;min-height:calc(100vh - 54px)}
-.sbar{background:var(--sur);border-right:1px solid var(--bor);display:flex;flex-direction:column}
-.sbh{padding:13px 13px 10px;border-bottom:1px solid var(--bor)}
-.sbhr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.sblbl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
-.sbcnt{font-size:11px;color:var(--tx3);background:var(--sur2);padding:2px 7px;border-radius:10px}
-.srch{width:100%;padding:7px 10px;border:1px solid var(--bor);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;color:var(--tx);background:var(--bg);outline:none}
-.srch::placeholder{color:var(--tx3)}
-.eml{flex:1;overflow-y:auto;padding:8px}
-.eit{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r);cursor:pointer;margin-bottom:2px;transition:background .12s}
-.eit:hover,.eit.act{background:var(--sur2)}
+.homebtn{width:32px;height:32px;border-radius:8px;border:1px solid #E4E1DA;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#6B6860}
+.homebtn:hover{background:#F0EEE9}
+.layout{display:grid;grid-template-columns:256px 1fr;min-height:calc(100vh - 54px)}
+.sidebar{background:#fff;border-right:1px solid #E4E1DA;display:flex;flex-direction:column}
+.sbhead{padding:13px 13px 10px;border-bottom:1px solid #E4E1DA}
+.sbrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sblbl{font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.07em}
+.sbcnt{font-size:11px;color:#9E9B94;background:#F0EEE9;padding:2px 7px;border-radius:10px}
+.srch{width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:#1A1917;background:#F7F6F3;outline:none}
+.srch::placeholder{color:#9E9B94}
+.emplist{flex:1;overflow-y:auto;padding:8px}
+.empitem{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;margin-bottom:2px;transition:background .12s}
+.empitem:hover,.empitem.active{background:#F0EEE9}
 .av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.en{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.er{font-size:11px;color:var(--tx3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mb{height:2px;background:var(--bor);border-radius:2px;margin-top:3px;overflow:hidden}
-.mf{height:100%;background:var(--grn);border-radius:2px}
-.ep{font-size:11px;font-weight:500;color:var(--tx3);flex-shrink:0;font-family:"DM Mono",monospace}
-.addbtn{margin:8px;padding:10px;border:1px dashed var(--bor2);border-radius:var(--r);background:none;font-family:"DM Sans",sans-serif;font-size:13px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
-.addbtn:hover{background:var(--sur2);color:var(--tx)}
+.einfo{flex:1;min-width:0}
+.ename{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.erole{font-size:11px;color:#9E9B94;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.minibar{height:2px;background:#E4E1DA;border-radius:2px;margin-top:3px;overflow:hidden}
+.minifill{height:100%;background:#1D9E75;border-radius:2px}
+.epct{font-size:11px;font-weight:500;color:#9E9B94;flex-shrink:0;font-family:'DM Mono',monospace}
+.addbtn{margin:8px;padding:10px;border:1px dashed #D0CCC3;border-radius:10px;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:#6B6860;cursor:pointer;width:calc(100% - 16px);transition:all .15s}
+.addbtn:hover{background:#F0EEE9;color:#1A1917}
 .main{padding:22px;overflow-y:auto}
 
-/* HOME DASHBOARD */
-.hometitle{font-size:20px;font-weight:600;margin-bottom:3px}
-.homesub{font-size:13px;color:var(--tx2);margin-bottom:20px}
-.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:22px}
-.statcard{background:var(--sur);border:1px solid var(--bor);border-radius:var(--rl);padding:16px;box-shadow:var(--sh)}
-.statlbl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.statval{font-size:30px;font-weight:600;font-family:"DM Mono",monospace;color:var(--tx)}
-.statval.grn{color:var(--grn)}
-.statbar{height:4px;background:var(--sur2);border-radius:2px;overflow:hidden;margin-top:8px}
-.statbarfill{height:100%;background:var(--grn);border-radius:2px}
-.sectlbl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
-.typegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:22px}
-.typecard{border-radius:var(--rl);padding:14px;border:1px solid transparent}
-.typecname{font-size:12px;font-weight:600;margin-bottom:8px}
-.typecval{font-size:26px;font-weight:700;font-family:"DM Mono",monospace;margin-bottom:2px}
-.typecmeta{font-size:11px;opacity:.7;margin-bottom:8px}
-.typecbar{height:3px;border-radius:2px;overflow:hidden}
-.typecbarfill{height:100%;border-radius:2px}
-.emptable{background:var(--sur);border:1px solid var(--bor);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
-.emptable table{width:100%;border-collapse:collapse;font-size:13px}
-.emptable th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;background:var(--sur2);border-bottom:1px solid var(--bor)}
-.emptable td{padding:10px 14px;border-bottom:1px solid var(--bor)}
-.emptable tr:last-child td{border-bottom:none}
-.emptable tr:hover td{background:var(--sur2);cursor:pointer}
-.typepill{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
-.tpbar{display:flex;align-items:center;gap:7px}
-.tpbartrack{flex:1;height:4px;background:var(--sur2);border-radius:2px;overflow:hidden;min-width:60px}
-.tpbarfill{height:100%;background:var(--grn);border-radius:2px}
-.tppct{font-size:11px;font-weight:600;color:var(--grn);font-family:"DM Mono",monospace;min-width:30px}
+/* HOME */
+.htitle{font-size:20px;font-weight:600;margin-bottom:3px}
+.hsub{font-size:13px;color:#6B6860;margin-bottom:20px}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.statcard{background:#fff;border:1px solid #E4E1DA;border-radius:14px;padding:16px}
+.statlbl{font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.statval{font-size:28px;font-weight:600;font-family:'DM Mono',monospace;color:#1A1917}
+.statval.g{color:#1D9E75}
+.statpbar{height:4px;background:#F0EEE9;border-radius:2px;overflow:hidden;margin-top:8px}
+.statpfill{height:100%;background:#1D9E75;border-radius:2px}
+.sectlbl{font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.typegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.typecard{border-radius:14px;padding:14px;border:1px solid transparent}
+.tcname{font-size:12px;font-weight:600;margin-bottom:8px}
+.tcval{font-size:24px;font-weight:700;font-family:'DM Mono',monospace;margin-bottom:2px}
+.tcmeta{font-size:11px;opacity:.7;margin-bottom:8px}
+.tcbar{height:3px;border-radius:2px;overflow:hidden}
+.tcbarfill{height:100%;border-radius:2px}
+.etable{background:#fff;border:1px solid #E4E1DA;border-radius:14px;overflow:hidden}
+.etable table{width:100%;border-collapse:collapse;font-size:13px}
+.etable th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;background:#F0EEE9;border-bottom:1px solid #E4E1DA}
+.etable td{padding:10px 14px;border-bottom:1px solid #E4E1DA}
+.etable tr:last-child td{border-bottom:none}
+.etable tbody tr:hover td{background:#F7F6F3;cursor:pointer}
+.tpill{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+.tprow{display:flex;align-items:center;gap:7px}
+.tptrack{flex:1;height:4px;background:#F0EEE9;border-radius:2px;overflow:hidden;min-width:50px}
+.tpfill{height:100%;background:#1D9E75;border-radius:2px}
+.tppct{font-size:11px;font-weight:600;color:#1D9E75;font-family:'DM Mono',monospace;min-width:28px}
 
 /* EMP DETAIL */
-.ehdr{background:var(--sur);border:1px solid var(--bor);border-radius:var(--rl);padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.ehdr{background:#fff;border:1px solid #E4E1DA;border-radius:14px;padding:18px;margin-bottom:14px}
 .ehrow{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
 .avlg{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
-.ename{font-size:16px;font-weight:600}
-.emeta{font-size:12px;color:var(--tx2);margin-top:3px}
-.eacts{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
-.hbtn{padding:6px 11px;border:1px solid var(--bor);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:var(--sur);color:var(--tx2);display:flex;align-items:center;gap:4px;transition:all .15s;text-decoration:none}
-.hbtn:hover{background:var(--sur2);color:var(--tx)}
-.hbtn.back{background:var(--sur2);border-color:var(--bor2)}
-.hbtn.danger{color:var(--red);border-color:#FECACA}
-.hbtn.danger:hover{background:var(--rl)}
-.mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:7px;margin-bottom:12px}
-.met{background:var(--bg);border-radius:var(--r);padding:9px 11px}
-.metl{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.metv{font-size:18px;font-weight:600;font-family:"DM Mono",monospace}
-.metv.grn{color:var(--grn)}
-.ptrak{height:4px;background:var(--sur2);border-radius:3px;overflow:hidden;margin-bottom:4px}
-.pbar{height:100%;background:var(--grn);border-radius:3px;transition:width .4s}
-.plbl{font-size:11px;color:var(--tx3);font-family:"DM Mono",monospace}
-.cltype{display:flex;align-items:center;gap:8px;margin-bottom:13px;padding:9px 12px;border-radius:var(--r);font-size:13px;font-weight:500}
+.ehname{font-size:16px;font-weight:600}
+.ehmeta{font-size:12px;color:#6B6860;margin-top:3px}
+.ehacts{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.hbtn{padding:6px 11px;border:1px solid #E4E1DA;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:#fff;color:#6B6860;display:inline-flex;align-items:center;gap:4px;transition:all .15s;text-decoration:none}
+.hbtn:hover{background:#F0EEE9;color:#1A1917}
+.hbtn.back{background:#F0EEE9;border-color:#D0CCC3;font-weight:500}
+.hbtn.del{color:#DC2626;border-color:#FECACA}
+.hbtn.del:hover{background:#FEF2F2}
+.mets{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:12px}
+.met{background:#F7F6F3;border-radius:10px;padding:9px 11px}
+.metl{font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.metv{font-size:18px;font-weight:600;font-family:'DM Mono',monospace;color:#1A1917}
+.metv.g{color:#1D9E75}
+.ptrack{height:4px;background:#F0EEE9;border-radius:3px;overflow:hidden;margin-bottom:4px}
+.pbar{height:100%;background:#1D9E75;border-radius:3px;transition:width .4s}
+.plbl{font-size:11px;color:#9E9B94;font-family:'DM Mono',monospace}
+.clbadge{display:flex;align-items:center;gap:8px;margin-bottom:13px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:500}
+.clbadgedot{width:8px;height:8px;border-radius:50%}
 .phase{margin-bottom:18px}
-.phdr{display:flex;align-items:center;gap:8px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--bor)}
-.phnm{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em}
-.phprog{flex:1;height:3px;background:var(--bor);border-radius:2px;overflow:hidden;max-width:70px}
-.phprogf{height:100%;background:var(--grn);border-radius:2px}
-.phct{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--sur2);color:var(--tx3);font-family:"DM Mono",monospace}
-.task{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:var(--r);cursor:pointer;margin-bottom:2px;transition:background .1s}
-.task:hover{background:var(--sur2)}
-.task.dn{opacity:.45}
-.tcb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--bor2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--sur);transition:all .15s}
-.task.dn .tcb{background:var(--grn);border-color:var(--grn)}
-.ck{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;display:none}
-.task.dn .ck{display:block}
-.tt{font-size:13px;color:var(--tx);line-height:1.45}
-.task.dn .tt{text-decoration:line-through;color:var(--tx3)}
+.phdr{display:flex;align-items:center;gap:8px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid #E4E1DA}
+.phnm{font-size:10px;font-weight:700;color:#6B6860;text-transform:uppercase;letter-spacing:.07em}
+.phprog{flex:1;height:3px;background:#E4E1DA;border-radius:2px;overflow:hidden;max-width:70px}
+.phprogf{height:100%;background:#1D9E75;border-radius:2px}
+.phct{font-size:10px;padding:2px 7px;border-radius:10px;background:#F0EEE9;color:#9E9B94;font-family:'DM Mono',monospace}
+.task{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:10px;cursor:pointer;margin-bottom:2px;transition:background .1s}
+.task:hover{background:#F0EEE9}
+.task.done{opacity:.45}
+.tcb{width:16px;height:16px;border-radius:4px;border:1.5px solid #D0CCC3;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s}
+.task.done .tcb{background:#1D9E75;border-color:#1D9E75}
+.cksvg{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;display:none}
+.task.done .cksvg{display:block}
+.ttxt{font-size:13px;color:#1A1917;line-height:1.45}
+.task.done .ttxt{text-decoration:line-through;color:#9E9B94}
 .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 .tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
-.tago{background:var(--bl);color:var(--blu)}
-.tagl{background:var(--gl);color:#065F46}
-.tagc{background:var(--pl);color:var(--pur)}
+.tago{background:#EFF6FF;color:#2563EB}
+.tagl{background:#E1F5EE;color:#065F46}
+.tagc{background:#F5F3FF;color:#7C3AED}
 
 /* MODAL */
-.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
-.mov.op{display:flex}
-.mod{background:var(--sur);border-radius:var(--rl);padding:22px;width:100%;max-width:410px;box-shadow:var(--shm);animation:su .2s ease}
-@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.movlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.movlay.open{display:flex}
+.modbox{background:#fff;border-radius:14px;padding:22px;width:100%;max-width:400px;animation:fadeup .2s ease}
+@keyframes fadeup{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modtitle{font-size:15px;font-weight:600;margin-bottom:16px}
 .fld{margin-bottom:11px}
-.fld label{display:block;font-size:12px;font-weight:500;color:var(--tx2);margin-bottom:4px}
-.fld input,.fld select{width:100%;padding:8px 11px;border:1px solid var(--bor);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;color:var(--tx);background:var(--sur);outline:none}
-.ibox{border-radius:var(--r);padding:10px 12px;margin-bottom:11px;font-size:12px;line-height:1.5}
-.ibox.blue{background:var(--bl);border:1px solid #BFDBFE;color:#1E40AF}
+.fld label{display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px}
+.fld input,.fld select{width:100%;padding:8px 11px;border:1px solid #E4E1DA;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:#1A1917;background:#fff;outline:none}
 .mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-.mbtn{padding:8px 15px;border:1px solid var(--bor);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:var(--sur);color:var(--tx2);transition:all .15s}
-.mbtn:hover{background:var(--sur2)}
-.mbtn.pri{background:var(--tx);color:#fff;border-color:var(--tx)}
-.mbtn.pri:hover{background:#2d2c2a}
-.mbtn:disabled{opacity:.5;cursor:not-allowed}
-
-/* TOASTS */
+.mbtn{padding:8px 15px;border:1px solid #E4E1DA;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#6B6860}
+.mbtn:hover{background:#F0EEE9}
+.mbtn.pri{background:#1A1917;color:#fff;border-color:#1A1917}
+.mbtn.pri:hover{background:#333}
 #toasts{position:fixed;bottom:18px;right:18px;z-index:300;display:flex;flex-direction:column;gap:7px}
-.toast{padding:11px 15px;border-radius:var(--r);font-size:13px;box-shadow:var(--shm);display:flex;align-items:flex-start;gap:8px;animation:ti .2s ease;max-width:340px;line-height:1.4}
-@keyframes ti{from{transform:translateX(14px);opacity:0}to{transform:translateX(0);opacity:1}}
-.toast.ok{background:var(--gl);color:#065F46;border:1px solid var(--gm)}
-.toast.err{background:var(--rl);color:#991B1B;border:1px solid #FECACA}
-.toast.inf{background:var(--bl);color:#1E40AF;border:1px solid #BFDBFE}
-.spin{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;margin-top:1px}
-@keyframes sp{to{transform:rotate(360deg)}}
-a.jlnk{color:var(--blu);text-decoration:none}
-a.jlnk:hover{text-decoration:underline}
-.empty{padding:20px;text-align:center;font-size:12px;color:var(--tx3)}
+.toast{padding:11px 15px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px;animation:slidein .2s ease;max-width:320px}
+@keyframes slidein{from{transform:translateX(14px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.ok{background:#E1F5EE;color:#065F46;border:1px solid #9FE1CB}
+.toast.err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.emptystate{padding:32px;text-align:center;color:#9E9B94;font-size:13px}
 </style>
 </head>
 <body>
+
 <nav>
   <div class="nbrand">
     <div class="nlogo">OT</div>
     <span class="ntitle">Onboarding Tracker</span>
     <span class="nsub">· India Operations · IMC</span>
   </div>
-  <div class="nright">
-    <button class="nibtn" onclick="goHome()" title="Dashboard home">&#8962;</button>
-  </div>
+  <button class="homebtn" id="homeNavBtn" title="Go to dashboard">⌂</button>
 </nav>
 
-<div class="lay">
-  <aside class="sbar">
-    <div class="sbh">
-      <div class="sbhr">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sbhead">
+      <div class="sbrow">
         <span class="sblbl">Employees</span>
-        <span class="sbcnt" id="ecnt">0</span>
+        <span class="sbcnt" id="empCount">0</span>
       </div>
-      <input class="srch" placeholder="Search&#8230;" oninput="filterEmps(this.value)"/>
+      <input class="srch" id="searchBox" placeholder="Search employees…"/>
     </div>
-    <div class="eml" id="eml"></div>
-    <button class="addbtn" onclick="showAdd()">+ Add new employee</button>
+    <div class="emplist" id="empList"></div>
+    <button class="addbtn" id="addBtn">+ Add new employee</button>
   </aside>
-  <main class="main" id="main"></main>
+  <main class="main" id="mainArea"></main>
 </div>
 
-<div class="mov" id="modal"><div class="mod" id="modinner"></div></div>
+<div class="movlay" id="modal">
+  <div class="modbox" id="modalBox"></div>
+</div>
 <div id="toasts"></div>
 
 <script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
 
-const CL={
-"Local Onboarding":{col:{bg:"#EFF6FF",c:"#1D4ED8",dot:"#2563EB"},phases:[
-{name:"Pre onboarding",tasks:[
-{id:"lo1",n:1,cat:"Relocation",own:"Employee",tl:"Ongoing",t:"Raise reimbursement request on Workday if relocation allowance was paid in advance."},
-{id:"lo2",n:2,cat:"Insurance",own:"Finance",tl:"On receipt of email",t:"Update employee and dependent details in insurance records."},
-{id:"lo3",n:3,cat:"PF Passbook",own:"Finance",tl:"On receipt of email",t:"Update the employee's PF passbook details on the EPFO portal."},
-{id:"lo4",n:4,cat:"ADP Enrolment",own:"Finance",tl:"Near to DOJ",t:"Update employee records in the ADP portal."},
-{id:"lo5",n:5,cat:"Communication",own:"HR Operations",tl:"On receipt from Recruitment",t:"Confirm DOJ with candidate and inform about HireRight as BGV vendor."},
-{id:"lo6",n:6,cat:"Tracker Update",own:"HR Operations",tl:"On receipt from Recruitment",t:"Update the respective columns in the Employee Onboarding Checklist."},
-{id:"lo7",n:7,cat:"Calendar",own:"HR Operations",tl:"On receipt from Recruitment",t:"Block calendar with Compliance, IT, and Jocelyn for onboarding coordination."},
-{id:"lo8",n:8,cat:"Calendar",own:"HR Operations",tl:"On receipt from Recruitment",t:"Block calendar with stakeholders for induction sessions."},
-{id:"lo9",n:9,cat:"Communication",own:"HR Operations",tl:"2 weeks prior to DOJ",t:"Email candidate to collect insurance, PF passbook, Connect post, and laptop preference."},
-{id:"lo10",n:10,cat:"Communication",own:"HR Operations",tl:"2 weeks prior to DOJ",t:"Share the Onboarding Plan with the Buddy or Manager via email."},
-{id:"lo11",n:11,cat:"Communication",own:"HR Operations",tl:"2 days prior to joining",t:"Email candidate with joining details, Day 1 plan, and point-of-contact information."},
-{id:"lo12",n:12,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Complete all pending Workday activities."},
-{id:"lo13",n:13,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Initiate and close the BGV from the Workday task."},
-{id:"lo14",n:14,cat:"Relocation",own:"HR Operations",tl:"Ongoing",t:"Initiate relocation email covering flights and accommodation."},
-{id:"lo15",n:15,cat:"Connect Post",own:"HR Operations",tl:"On receipt of email",t:"Create the Connect post on Canva and upload to the Connect platform."},
-{id:"lo16",n:16,cat:"Insurance",own:"HR Operations",tl:"On receipt of email",t:"Share candidate's insurance details with Finance (Pooja Parab)."},
-{id:"lo17",n:17,cat:"PF Passbook",own:"HR Operations",tl:"On receipt of email",t:"Follow up with candidate to share their PF passbook details."},
-{id:"lo18",n:18,cat:"POSH Training",own:"HR Operations",tl:"Near to DOJ",t:"Obtain the POSH training login credentials from the vendor."},
-{id:"lo19",n:19,cat:"Desk Allocation",own:"HR Operations",tl:"Near to DOJ",t:"Confirm seating arrangement with manager and inform Facility team."},
-{id:"lo20",n:20,cat:"Relocation",own:"Neha",tl:"Ongoing",t:"Carry out and close all relocation-related activities."},
-{id:"lo21",n:21,cat:"Communication",own:"Recruitment Team",tl:"On Hire",t:"Share offer packet, confirm relocation eligibility and traineeship details."},
-{id:"lo22",n:22,cat:"Tracker Update",own:"Recruitment Team",tl:"On Hire",t:"Update the Employee Onboarding Checklist with relevant details."}
-]},
-{name:"Onboarding - Day 1",tasks:[
-{id:"lo23",n:23,cat:"Welcome Kit",own:"Facility",tl:"On the DOJ",t:"Arrange welcome kit on designated desk before new joiner arrives."},
-{id:"lo24",n:24,cat:"Office Tour",own:"HR Operations",tl:"On the DOJ",t:"Conduct an office tour for the new joiner."},
-{id:"lo25",n:25,cat:"Induction",own:"HR Operations",tl:"On the DOJ",t:"Conduct all induction sessions for the new joiner."},
-{id:"lo26",n:26,cat:"HR Induction",own:"HR Operations",tl:"On the DOJ",t:"Conduct HR Induction covering Workday and system orientation."},
-{id:"lo27",n:27,cat:"Payroll Induction",own:"HR Operations",tl:"On the DOJ",t:"Carry out Payroll and Benefits induction for the new joiner."},
-{id:"lo28",n:28,cat:"Connect Post",own:"HR Operations",tl:"On the DOJ",t:"Verify that the Connect post is live and active."},
-{id:"lo29",n:29,cat:"Channel Addition",own:"HR Operations",tl:"On the DOJ",t:"Add new joiner to WhatsApp group, DLU distribution list, and Mattermost."},
-{id:"lo30",n:30,cat:"Box Folder",own:"HR Operations",tl:"On the DOJ",t:"Copy candidate's Box folder from Recruitment to HR Compensation folder."},
-{id:"lo31",n:31,cat:"Onboarding Plan",own:"HR Operations",tl:"On the DOJ",t:"Share the complete onboarding plan with the new joiner."},
-{id:"lo32",n:32,cat:"POSH Certificate",own:"HR Operations",tl:"On the DOJ",t:"Share POSH training login credentials with the new joiner."},
-{id:"lo33",n:33,cat:"Audit Induction",own:"HR Operations",tl:"On the DOJ",t:"Email Edjaz to add new joiner for the Audit Induction session."},
-{id:"lo34",n:34,cat:"HRBP Connect",own:"HRBP",tl:"On the DOJ",t:"Facilitate the HRBP's introductory connect with the new joiner."},
-{id:"lo35",n:35,cat:"IT Allocation",own:"IT Team",tl:"On the DOJ",t:"Complete the IT setup for the new joiner."},
-{id:"lo36",n:36,cat:"Ola and Uber",own:"Travel Desk",tl:"On the DOJ",t:"Grant Ola and Uber access to the new joiner's email ID."}
-]},
-{name:"Post onboarding - 1st month",tasks:[
-{id:"lo37",n:37,cat:"CHRO Connect",own:"HR Operations",tl:"Within 1st month",t:"Schedule a monthly connect session between the new joiner and the CHRO."},
-{id:"lo38",n:38,cat:"Compliance Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Compliance Induction for the new joiner."},
-{id:"lo39",n:39,cat:"Risk Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Risk Induction for the new joiner."},
-{id:"lo40",n:40,cat:"Legal Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Legal Induction for the new joiner."},
-{id:"lo41",n:41,cat:"Info Sec Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Information Security Induction for the new joiner."},
-{id:"lo42",n:42,cat:"POSH Certificate",own:"HR Operations",tl:"Within 1st month",t:"Download and save the POSH training completion certificate."},
-{id:"lo43",n:43,cat:"BGV Report",own:"HR Operations",tl:"Within 1st month",t:"Save the BGV completion report in the employee's Box folder."}
-]}
-]},
-"International Incoming":{col:{bg:"#F0FDF4",c:"#15803D",dot:"#16A34A"},phases:[
-{name:"Pre arrival",tasks:[
-{id:"ii1",n:1,cat:"Tax Guidance",own:"Deloitte",tl:"Ongoing",t:"Conduct the tax briefing and guide on the annual documentation process."},
-{id:"ii2",n:2,cat:"Visa Initiation",own:"Employee",tl:"On commencement of transfer",t:"Initiate the Visa application process for the IAA."},
-{id:"ii3",n:3,cat:"Visa Documentation",own:"Employee",tl:"On commencement of Visa",t:"Submit all required documents for Visa initiation."},
-{id:"ii4",n:4,cat:"Visa Confirmation",own:"Employee",tl:"Ongoing",t:"Review and confirm the provisional Visa application for self and dependents."},
-{id:"ii5",n:5,cat:"Insurance",own:"Finance",tl:"Ongoing",t:"Process the insurance payment."},
-{id:"ii6",n:6,cat:"Agreement Details",own:"HR Operations",tl:"On receipt from Business Leads",t:"Receive and acknowledge arrival details of the IAA from Business Lead."},
-{id:"ii7",n:7,cat:"Benefits Intro",own:"HR Operations",tl:"On receipt from Business Leads",t:"Discuss and explain the applicable benefits with the incoming IAA."},
-{id:"ii8",n:8,cat:"Tax Consultation",own:"HR Operations",tl:"Ongoing",t:"Email Deloitte to schedule an incoming tax briefing session for the IAA."},
-{id:"ii9",n:9,cat:"Insurance",own:"HR Operations",tl:"Ongoing",t:"Email insurance agent WR for insurance setup and closure."},
-{id:"ii10",n:10,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Complete required Workday tasks as an approver."},
-{id:"ii11",n:11,cat:"House Search",own:"HR Operations",tl:"Ongoing",t:"Share broker's contact details with the employee for house-hunting."},
-{id:"ii12",n:12,cat:"Agreement",own:"HR Operations",tl:"Ongoing",t:"Ensure the exchange rate is mentioned in the contract."},
-{id:"ii13",n:13,cat:"Additional Allowance",own:"HR Operations",tl:"Ongoing",t:"Email Finance for relocation and brokerage allowance payment."},
-{id:"ii14",n:14,cat:"ID Card",own:"HR Operations",tl:"Ongoing",t:"Print the ID card and grant building access."},
-{id:"ii15",n:15,cat:"Reporting Details",own:"HRBP",tl:"Ongoing",t:"Share manager reporting line and cost centre details from host country HRBP."},
-{id:"ii16",n:16,cat:"Desk Allocation",own:"Manager",tl:"Ongoing",t:"Confirm seating arrangement with the manager."},
-{id:"ii17",n:17,cat:"Visa Documentation",own:"Travel Desk",tl:"Ongoing",t:"Print, sign, and stamp the Tax Undertaking Letter and Undertaking Letters for Dependents."},
-{id:"ii18",n:18,cat:"Visa Application",own:"Travel Desk",tl:"Ongoing",t:"Print, sign, and stamp the Invitation Letter for dependents."},
-{id:"ii19",n:19,cat:"Accommodation",own:"Travel Desk",tl:"Ongoing",t:"Arrange hotel and flight bookings for the employee."},
-{id:"ii20",n:20,cat:"Egencia Login",own:"Travel Desk",tl:"Ongoing",t:"Activate the Egencia account for the incoming IAA."},
-{id:"ii21",n:21,cat:"Visa Documentation",own:"Visa Agent",tl:"Ongoing",t:"Draft the Tax Undertaking Letter and Undertaking Letters for Dependents."},
-{id:"ii22",n:22,cat:"Visa Application",own:"Visa Agent",tl:"Ongoing",t:"Prepare and submit the provisional Visa application for employee and dependents."},
-{id:"ii23",n:23,cat:"Visa Application",own:"Visa Agent",tl:"Ongoing",t:"Prepare the Invitation Letter for dependents if applicable."},
-{id:"ii24",n:24,cat:"PAN Application",own:"Visa Agent",tl:"Ongoing",t:"Send the PAN application to the employee for signature."}
-]},
-{name:"Post arrival",tasks:[
-{id:"ii25",n:25,cat:"Hotel Form C",own:"Employee",tl:"Within 2-3 days of arrival",t:"Collect and submit Form C from the hotel."},
-{id:"ii26",n:26,cat:"Visa Confirmation",own:"Employee",tl:"Ongoing",t:"Share signed PAN application and courier physical documents."},
-{id:"ii27",n:27,cat:"Bank Account",own:"Employee",tl:"Post account number receipt",t:"Update India bank account details in Workday."},
-{id:"ii28",n:28,cat:"Rented Flat Form C",own:"Employee",tl:"Post moving to flat",t:"Submit Form C received from the landlord upon moving to a flat."},
-{id:"ii29",n:29,cat:"Tax Consultation",own:"Finance",tl:"Lifecycle",t:"Provide ongoing tax consultation covering 26AS and TDS filing throughout tenure."},
-{id:"ii30",n:30,cat:"Additional Allowance",own:"Finance",tl:"Post bank account update",t:"Process the relocation and brokerage allowance payment."},
-{id:"ii31",n:31,cat:"SIM Card",own:"HR Operations",tl:"Day 1",t:"Provide a SIM card to the incoming IAA."},
-{id:"ii32",n:32,cat:"Insurance Copy",own:"HR Operations",tl:"Day 1",t:"Save a copy of the insurance document in the employee's Box folder."},
-{id:"ii33",n:33,cat:"Bank Account",own:"HR Operations",tl:"Post Form C and FRRO",t:"Initiate and complete bank account opening post Form C and FRRO."},
-{id:"ii34",n:34,cat:"POSH Training",own:"HR Operations",tl:"Day 1",t:"Initiate POSH training for the incoming employee."},
-{id:"ii35",n:35,cat:"Mandatory Trainings",own:"HR Operations",tl:"Day 1",t:"Schedule induction sessions for Audit, Risk, Legal, Compliance, and InfoSec."},
-{id:"ii36",n:36,cat:"Connect Post",own:"HR Operations",tl:"Day 1",t:"Update the transfer details on the Connect platform."},
-{id:"ii37",n:37,cat:"Leave Accrual",own:"HR Operations",tl:"Day 1",t:"Accrue leaves as directed by the home office."},
-{id:"ii38",n:38,cat:"Group Addition",own:"HR Operations",tl:"Day 1",t:"Add employee to DLU distribution list, Mattermost channel, and HR team groups."},
-{id:"ii39",n:39,cat:"Ola and Uber",own:"Travel Desk",tl:"Day 1",t:"Assign Ola and Uber access to the employee's account."},
-{id:"ii40",n:40,cat:"Aadhaar Card",own:"Visa Agent",tl:"Post moving to flat",t:"Submit the Aadhaar card application upon moving to a flat."}
-]}
-]},
-"Local Offboarding":{col:{bg:"#FFF7ED",c:"#C2410C",dot:"#EA580C"},phases:[
-{name:"Pre offboarding",tasks:[
-{id:"of1",n:1,cat:"Letter",own:"HR Operations",tl:"On receipt of resignation",t:"Draft and issue the termination letter to the employee."},
-{id:"of2",n:2,cat:"Resignation Email",own:"HR Operations",tl:"On receipt of resignation",t:"Save the resignation email in the employee's Box folder."},
-{id:"of3",n:3,cat:"Communication",own:"HR Operations",tl:"On receipt of resignation",t:"Send a farewell email and update the internal team."},
-{id:"of4",n:4,cat:"Workday",own:"HR Operations",tl:"On confirmation from HRBP",t:"Update employee records in Workday upon HRBP confirmation."},
-{id:"of5",n:5,cat:"Letters",own:"HR Operations",tl:"During notice period",t:"Issue the termination letter for involuntary exits if applicable."},
-{id:"of6",n:6,cat:"Communication",own:"HRBP",tl:"On receipt of resignation",t:"Acknowledge and confirm employee's last working day."},
-{id:"of7",n:7,cat:"Work Handover",own:"Manager",tl:"Notice period",t:"Obtain confirmation of work handover from the manager."}
-]},
-{name:"Offboarding - last working day",tasks:[
-{id:"of8",n:8,cat:"ID Card",own:"Facility",tl:"LWD",t:"Collect and secure the employee's ID card on the Last Working Day."},
-{id:"of9",n:9,cat:"IT Handover",own:"IT Team",tl:"LWD",t:"Confirm the return of the ID card."},
-{id:"of10",n:10,cat:"Laptop and Mobile",own:"IT Team",tl:"LWD",t:"Revoke system access, collect laptop, mobile, and accessories."}
-]},
-{name:"Post offboarding",tasks:[
-{id:"of11",n:11,cat:"PF and Gratuity",own:"Finance",tl:"Post LWD",t:"Facilitate the transfer or withdrawal of PF and Gratuity as applicable."},
-{id:"of12",n:12,cat:"Payments",own:"Finance",tl:"Within 2 working days",t:"Close VR payments and settle all outstanding dues and full and final settlement."},
-{id:"of13",n:13,cat:"Letters",own:"HR Operations",tl:"LWD",t:"Archive the employee's physical and digital files."},
-{id:"of14",n:14,cat:"Letters",own:"HR Operations",tl:"LWD plus 2 working days",t:"Issue the experience letter to the departing employee."},
-{id:"of15",n:15,cat:"Exit from Comms",own:"HR Operations",tl:"LWD",t:"Remove employee's email from DLU, Mattermost, and WhatsApp group."}
-]}
-]},
-"International Outgoing":{col:{bg:"#FDF4FF",c:"#7E22CE",dot:"#9333EA"},phases:[
-{name:"Pre departure",tasks:[
-{id:"io1",n:1,cat:"Payments",own:"Finance",tl:"On receipt from Business Leads",t:"Process the VR and Deferred Payment Reimbursement."},
-{id:"io2",n:2,cat:"Recovery",own:"Finance Legal",tl:"On receipt from Business Leads",t:"Initiate security deposit recovery through Legal and Finance if applicable."},
-{id:"io3",n:3,cat:"Separation Letter",own:"HR Operations",tl:"On receipt from Business Leads",t:"Draft and obtain signatures on the Separation Letter."},
-{id:"io4",n:4,cat:"Leaves",own:"HR Operations",tl:"On receipt from Business Leads",t:"Reconcile available leaves, pay out or transfer up to 5 days to new host country."},
-{id:"io5",n:5,cat:"Tax Consultation",own:"HR Operations",tl:"On receipt from Business Leads",t:"Schedule an offboarding tax briefing session."},
-{id:"io6",n:6,cat:"Workday",own:"HR Operations",tl:"On receipt from Business Leads",t:"Complete required Workday actions for the outgoing IAA."},
-{id:"io7",n:7,cat:"Insurance",own:"HR Operations",tl:"LWD plus 2 working days",t:"Discontinue employee's insurance and process refund of any pending amount."},
-{id:"io8",n:8,cat:"Communication",own:"HRBP",tl:"On receipt from Business Leads",t:"Confirm the separation from the India Agreement."},
-{id:"io9",n:9,cat:"Repatriation Flights",own:"Travel Desk",tl:"On receipt from Business Leads",t:"Arrange repatriation flight bookings for the employee."}
-]},
-{name:"Post departure",tasks:[
-{id:"io10",n:10,cat:"Bank Account",own:"Finance",tl:"Post LWD",t:"Close the employee's India bank account."},
-{id:"io11",n:11,cat:"Payments",own:"Finance",tl:"Post LWD",t:"Process the Repatriation Allowance payment."},
-{id:"io12",n:12,cat:"Visa FRRO",own:"HR Operations",tl:"Post finance confirmation",t:"Initiate cancellation of the Visa and FRRO post finance confirmation."},
-{id:"io13",n:13,cat:"Communication",own:"HR Operations",tl:"LWD",t:"Remove employee from DLU distribution list, Mattermost, and WhatsApp group."},
-{id:"io14",n:14,cat:"Ola and Uber",own:"Travel Desk",tl:"LWD",t:"Deactivate the employee's Ola and Uber accounts."},
-{id:"io15",n:15,cat:"Egencia",own:"Travel Desk",tl:"LWD",t:"Discontinue the employee's India Egencia account."}
-]}
-]}
+var TYPES = ["Local Onboarding","International Incoming","Local Offboarding","International Outgoing"];
+
+var TYPE_COLORS = {
+  "Local Onboarding":       {bg:"#EFF6FF", c:"#1D4ED8", dot:"#2563EB"},
+  "International Incoming": {bg:"#F0FDF4", c:"#15803D", dot:"#16A34A"},
+  "Local Offboarding":      {bg:"#FFF7ED", c:"#C2410C", dot:"#EA580C"},
+  "International Outgoing": {bg:"#FDF4FF", c:"#7E22CE", dot:"#9333EA"}
 };
 
-const PAL=[{bg:"#EFF6FF",c:"#1D4ED8"},{bg:"#F0FDF4",c:"#15803D"},{bg:"#FDF4FF",c:"#7E22CE"},{bg:"#FFF7ED",c:"#C2410C"},{bg:"#FFF1F2",c:"#BE123C"},{bg:"#F0FDFA",c:"#0F766E"}];
-let emps={},sel=null,qry="";
-const SK="obt_imc_v2";
+var AV_PAL = [
+  {bg:"#EFF6FF",c:"#1D4ED8"},{bg:"#F0FDF4",c:"#15803D"},
+  {bg:"#FDF4FF",c:"#7E22CE"},{bg:"#FFF7ED",c:"#C2410C"},
+  {bg:"#FFF1F2",c:"#BE123C"},{bg:"#F0FDFA",c:"#0F766E"}
+];
 
-function load(){try{const s=localStorage.getItem(SK);if(s)emps=JSON.parse(s);}catch(e){}}
-function save(){try{localStorage.setItem(SK,JSON.stringify(emps));}catch(e){}}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function inits(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()||"?";}
-function pal(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))&0xfffffff;return PAL[h%PAL.length];}
-function tks(type){return CL[type].phases.flatMap(p=>p.tasks);}
-function dn(e){const ch=e.checks||{};return tks(e.type).filter(t=>ch[t.id]).length;}
-function pct(e){const tot=tks(e.type).length;return tot?Math.round(dn(e)/tot*100):0;}
+var CHECKLISTS = {
+"Local Onboarding": [
+  {phase:"Pre onboarding", tasks:[
+    {id:"lo1",n:1,own:"Employee",tl:"Ongoing",cat:"Relocation",t:"Raise reimbursement request on Workday if relocation allowance was paid in advance."},
+    {id:"lo2",n:2,own:"Finance",tl:"On receipt of email",cat:"Insurance",t:"Update employee and dependent details in insurance records."},
+    {id:"lo3",n:3,own:"Finance",tl:"On receipt of email",cat:"PF Passbook",t:"Update the employee's PF passbook details on the EPFO portal."},
+    {id:"lo4",n:4,own:"Finance",tl:"Near to DOJ",cat:"ADP Enrolment",t:"Update employee records in the ADP portal."},
+    {id:"lo5",n:5,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Communication",t:"Confirm DOJ with candidate and inform about HireRight as BGV vendor."},
+    {id:"lo6",n:6,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Tracker Update",t:"Update the respective columns in the Employee Onboarding Checklist."},
+    {id:"lo7",n:7,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Calendar",t:"Block calendar with Compliance, IT, and Jocelyn for onboarding coordination."},
+    {id:"lo8",n:8,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Calendar",t:"Block calendar with stakeholders for induction sessions."},
+    {id:"lo9",n:9,own:"HR Operations",tl:"2 weeks prior to DOJ",cat:"Communication",t:"Email candidate to collect insurance, PF passbook, Connect post, and laptop preference."},
+    {id:"lo10",n:10,own:"HR Operations",tl:"2 weeks prior to DOJ",cat:"Communication",t:"Share the Onboarding Plan with the Buddy or Manager via email."},
+    {id:"lo11",n:11,own:"HR Operations",tl:"2 days prior to joining",cat:"Communication",t:"Email candidate with joining details, Day 1 plan, and point-of-contact information."},
+    {id:"lo12",n:12,own:"HR Operations",tl:"Ongoing",cat:"Workday",t:"Complete all pending Workday activities."},
+    {id:"lo13",n:13,own:"HR Operations",tl:"Ongoing",cat:"Workday",t:"Initiate and close the BGV from the Workday task."},
+    {id:"lo14",n:14,own:"HR Operations",tl:"Ongoing",cat:"Relocation",t:"Initiate relocation email covering flights and accommodation."},
+    {id:"lo15",n:15,own:"HR Operations",tl:"On receipt of email",cat:"Connect Post",t:"Create the Connect post on Canva and upload to the Connect platform."},
+    {id:"lo16",n:16,own:"HR Operations",tl:"On receipt of email",cat:"Insurance",t:"Share candidate's insurance details with Finance (Pooja Parab)."},
+    {id:"lo17",n:17,own:"HR Operations",tl:"On receipt of email",cat:"PF Passbook",t:"Follow up with candidate to share their PF passbook details."},
+    {id:"lo18",n:18,own:"HR Operations",tl:"Near to DOJ",cat:"POSH Training",t:"Obtain the POSH training login credentials from the vendor."},
+    {id:"lo19",n:19,own:"HR Operations",tl:"Near to DOJ",cat:"Desk Allocation",t:"Confirm seating arrangement with manager and inform Facility team."},
+    {id:"lo20",n:20,own:"Neha",tl:"Ongoing",cat:"Relocation",t:"Carry out and close all relocation-related activities."},
+    {id:"lo21",n:21,own:"Recruitment Team",tl:"On Hire",cat:"Communication",t:"Share offer packet, confirm relocation eligibility and traineeship details."},
+    {id:"lo22",n:22,own:"Recruitment Team",tl:"On Hire",cat:"Tracker Update",t:"Update the Employee Onboarding Checklist with relevant details."}
+  ]},
+  {phase:"Onboarding - Day 1", tasks:[
+    {id:"lo23",n:23,own:"Facility",tl:"On the DOJ",cat:"Welcome Kit",t:"Arrange welcome kit on designated desk before new joiner arrives."},
+    {id:"lo24",n:24,own:"HR Operations",tl:"On the DOJ",cat:"Office Tour",t:"Conduct an office tour for the new joiner."},
+    {id:"lo25",n:25,own:"HR Operations",tl:"On the DOJ",cat:"Induction",t:"Conduct all induction sessions for the new joiner."},
+    {id:"lo26",n:26,own:"HR Operations",tl:"On the DOJ",cat:"HR Induction",t:"Conduct HR Induction covering Workday and system orientation."},
+    {id:"lo27",n:27,own:"HR Operations",tl:"On the DOJ",cat:"Payroll Induction",t:"Carry out Payroll and Benefits induction for the new joiner."},
+    {id:"lo28",n:28,own:"HR Operations",tl:"On the DOJ",cat:"Connect Post",t:"Verify that the Connect post is live and active."},
+    {id:"lo29",n:29,own:"HR Operations",tl:"On the DOJ",cat:"Channel Addition",t:"Add new joiner to WhatsApp group, DLU distribution list, and Mattermost."},
+    {id:"lo30",n:30,own:"HR Operations",tl:"On the DOJ",cat:"Box Folder",t:"Copy candidate's Box folder from Recruitment to HR Compensation folder."},
+    {id:"lo31",n:31,own:"HR Operations",tl:"On the DOJ",cat:"Onboarding Plan",t:"Share the complete onboarding plan with the new joiner."},
+    {id:"lo32",n:32,own:"HR Operations",tl:"On the DOJ",cat:"POSH Certificate",t:"Share POSH training login credentials with the new joiner."},
+    {id:"lo33",n:33,own:"HR Operations",tl:"On the DOJ",cat:"Audit Induction",t:"Email Edjaz to add new joiner for the Audit Induction session."},
+    {id:"lo34",n:34,own:"HRBP",tl:"On the DOJ",cat:"HRBP Connect",t:"Facilitate the HRBP's introductory connect with the new joiner."},
+    {id:"lo35",n:35,own:"IT Team",tl:"On the DOJ",cat:"IT Allocation",t:"Complete the IT setup for the new joiner."},
+    {id:"lo36",n:36,own:"Travel Desk",tl:"On the DOJ",cat:"Ola and Uber",t:"Grant Ola and Uber access to the new joiner's email ID."}
+  ]},
+  {phase:"Post onboarding - 1st month", tasks:[
+    {id:"lo37",n:37,own:"HR Operations",tl:"Within 1st month",cat:"CHRO Connect",t:"Schedule a monthly connect session between the new joiner and the CHRO."},
+    {id:"lo38",n:38,own:"HR Operations",tl:"Within 1st month",cat:"Compliance Induction",t:"Conduct Compliance Induction for the new joiner."},
+    {id:"lo39",n:39,own:"HR Operations",tl:"Within 1st month",cat:"Risk Induction",t:"Conduct Risk Induction for the new joiner."},
+    {id:"lo40",n:40,own:"HR Operations",tl:"Within 1st month",cat:"Legal Induction",t:"Conduct Legal Induction for the new joiner."},
+    {id:"lo41",n:41,own:"HR Operations",tl:"Within 1st month",cat:"Info Sec Induction",t:"Conduct Information Security Induction for the new joiner."},
+    {id:"lo42",n:42,own:"HR Operations",tl:"Within 1st month",cat:"POSH Certificate",t:"Download and save the POSH training completion certificate."},
+    {id:"lo43",n:43,own:"HR Operations",tl:"Within 1st month",cat:"BGV Report",t:"Save the BGV completion report in the employee's Box folder."}
+  ]}
+],
+"International Incoming": [
+  {phase:"Pre arrival", tasks:[
+    {id:"ii1",n:1,own:"Deloitte",tl:"Ongoing",cat:"Tax Guidance",t:"Conduct the tax briefing and guide on the annual documentation process."},
+    {id:"ii2",n:2,own:"Employee",tl:"On commencement of transfer",cat:"Visa Initiation",t:"Initiate the Visa application process for the IAA."},
+    {id:"ii3",n:3,own:"Employee",tl:"On commencement of Visa",cat:"Visa Documentation",t:"Submit all required documents for Visa initiation."},
+    {id:"ii4",n:4,own:"Employee",tl:"Ongoing",cat:"Visa Confirmation",t:"Review and confirm the provisional Visa application for self and dependents."},
+    {id:"ii5",n:5,own:"Finance",tl:"Ongoing",cat:"Insurance",t:"Process the insurance payment."},
+    {id:"ii6",n:6,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Agreement Details",t:"Receive and acknowledge arrival details of the IAA from Business Lead."},
+    {id:"ii7",n:7,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Benefits Intro",t:"Discuss and explain the applicable benefits with the incoming IAA."},
+    {id:"ii8",n:8,own:"HR Operations",tl:"Ongoing",cat:"Tax Consultation",t:"Email Deloitte to schedule an incoming tax briefing session for the IAA."},
+    {id:"ii9",n:9,own:"HR Operations",tl:"Ongoing",cat:"Insurance",t:"Email insurance agent WR for insurance setup and closure."},
+    {id:"ii10",n:10,own:"HR Operations",tl:"Ongoing",cat:"Workday",t:"Complete required Workday tasks as an approver."},
+    {id:"ii11",n:11,own:"HR Operations",tl:"Ongoing",cat:"House Search",t:"Share broker's contact details with the employee for house-hunting."},
+    {id:"ii12",n:12,own:"HR Operations",tl:"Ongoing",cat:"Agreement",t:"Ensure the exchange rate is mentioned in the contract."},
+    {id:"ii13",n:13,own:"HR Operations",tl:"Ongoing",cat:"Additional Allowance",t:"Email Finance for relocation and brokerage allowance payment."},
+    {id:"ii14",n:14,own:"HR Operations",tl:"Ongoing",cat:"ID Card",t:"Print the ID card and grant building access."},
+    {id:"ii15",n:15,own:"HRBP",tl:"Ongoing",cat:"Reporting Details",t:"Share manager reporting line and cost centre details from host country HRBP."},
+    {id:"ii16",n:16,own:"Manager",tl:"Ongoing",cat:"Desk Allocation",t:"Confirm seating arrangement with the manager."},
+    {id:"ii17",n:17,own:"Travel Desk",tl:"Ongoing",cat:"Visa Documentation",t:"Print, sign, and stamp the Tax Undertaking Letter and Undertaking Letters for Dependents."},
+    {id:"ii18",n:18,own:"Travel Desk",tl:"Ongoing",cat:"Visa Application",t:"Print, sign, and stamp the Invitation Letter for dependents."},
+    {id:"ii19",n:19,own:"Travel Desk",tl:"Ongoing",cat:"Accommodation",t:"Arrange hotel and flight bookings for the employee."},
+    {id:"ii20",n:20,own:"Travel Desk",tl:"Ongoing",cat:"Egencia Login",t:"Activate the Egencia account for the incoming IAA."},
+    {id:"ii21",n:21,own:"Visa Agent",tl:"Ongoing",cat:"Visa Documentation",t:"Draft the Tax Undertaking Letter and Undertaking Letters for Dependents."},
+    {id:"ii22",n:22,own:"Visa Agent",tl:"Ongoing",cat:"Visa Application",t:"Prepare and submit the provisional Visa application for employee and dependents."},
+    {id:"ii23",n:23,own:"Visa Agent",tl:"Ongoing",cat:"Visa Application",t:"Prepare the Invitation Letter for dependents if applicable."},
+    {id:"ii24",n:24,own:"Visa Agent",tl:"Ongoing",cat:"PAN Application",t:"Send the PAN application to the employee for signature."}
+  ]},
+  {phase:"Post arrival", tasks:[
+    {id:"ii25",n:25,own:"Employee",tl:"Within 2-3 days of arrival",cat:"Hotel Form C",t:"Collect and submit Form C from the hotel."},
+    {id:"ii26",n:26,own:"Employee",tl:"Ongoing",cat:"Visa Confirmation",t:"Share signed PAN application and courier physical documents."},
+    {id:"ii27",n:27,own:"Employee",tl:"Post account number receipt",cat:"Bank Account",t:"Update India bank account details in Workday."},
+    {id:"ii28",n:28,own:"Employee",tl:"Post moving to flat",cat:"Rented Flat Form C",t:"Submit Form C received from the landlord upon moving to a flat."},
+    {id:"ii29",n:29,own:"Finance",tl:"Lifecycle",cat:"Tax Consultation",t:"Provide ongoing tax consultation covering 26AS and TDS filing throughout tenure."},
+    {id:"ii30",n:30,own:"Finance",tl:"Post bank account update",cat:"Additional Allowance",t:"Process the relocation and brokerage allowance payment."},
+    {id:"ii31",n:31,own:"HR Operations",tl:"Day 1",cat:"SIM Card",t:"Provide a SIM card to the incoming IAA."},
+    {id:"ii32",n:32,own:"HR Operations",tl:"Day 1",cat:"Insurance Copy",t:"Save a copy of the insurance document in the employee's Box folder."},
+    {id:"ii33",n:33,own:"HR Operations",tl:"Post Form C and FRRO",cat:"Bank Account",t:"Initiate and complete bank account opening post Form C and FRRO."},
+    {id:"ii34",n:34,own:"HR Operations",tl:"Day 1",cat:"POSH Training",t:"Initiate POSH training for the incoming employee."},
+    {id:"ii35",n:35,own:"HR Operations",tl:"Day 1",cat:"Mandatory Trainings",t:"Schedule induction sessions for Audit, Risk, Legal, Compliance, and InfoSec."},
+    {id:"ii36",n:36,own:"HR Operations",tl:"Day 1",cat:"Connect Post",t:"Update the transfer details on the Connect platform."},
+    {id:"ii37",n:37,own:"HR Operations",tl:"Day 1",cat:"Leave Accrual",t:"Accrue leaves as directed by the home office."},
+    {id:"ii38",n:38,own:"HR Operations",tl:"Day 1",cat:"Group Addition",t:"Add employee to DLU distribution list, Mattermost channel, and HR team groups."},
+    {id:"ii39",n:39,own:"Travel Desk",tl:"Day 1",cat:"Ola and Uber",t:"Assign Ola and Uber access to the employee's account."},
+    {id:"ii40",n:40,own:"Visa Agent",tl:"Post moving to flat",cat:"Aadhaar Card",t:"Submit the Aadhaar card application upon moving to a flat."}
+  ]}
+],
+"Local Offboarding": [
+  {phase:"Pre offboarding", tasks:[
+    {id:"of1",n:1,own:"HR Operations",tl:"On receipt of resignation",cat:"Letter",t:"Draft and issue the termination letter to the employee."},
+    {id:"of2",n:2,own:"HR Operations",tl:"On receipt of resignation",cat:"Resignation Email",t:"Save the resignation email in the employee's Box folder."},
+    {id:"of3",n:3,own:"HR Operations",tl:"On receipt of resignation",cat:"Communication",t:"Send a farewell email and update the internal team."},
+    {id:"of4",n:4,own:"HR Operations",tl:"On confirmation from HRBP",cat:"Workday",t:"Update employee records in Workday upon HRBP confirmation."},
+    {id:"of5",n:5,own:"HR Operations",tl:"During notice period",cat:"Letters",t:"Issue the termination letter for involuntary exits if applicable."},
+    {id:"of6",n:6,own:"HRBP",tl:"On receipt of resignation",cat:"Communication",t:"Acknowledge and confirm employee's last working day."},
+    {id:"of7",n:7,own:"Manager",tl:"Notice period",cat:"Work Handover",t:"Obtain confirmation of work handover from the manager."}
+  ]},
+  {phase:"Offboarding - last working day", tasks:[
+    {id:"of8",n:8,own:"Facility",tl:"LWD",cat:"ID Card",t:"Collect and secure the employee's ID card on the Last Working Day."},
+    {id:"of9",n:9,own:"IT Team",tl:"LWD",cat:"IT Handover",t:"Confirm the return of the ID card."},
+    {id:"of10",n:10,own:"IT Team",tl:"LWD",cat:"Laptop and Mobile",t:"Revoke system access, collect laptop, mobile, and accessories."}
+  ]},
+  {phase:"Post offboarding", tasks:[
+    {id:"of11",n:11,own:"Finance",tl:"Post LWD",cat:"PF and Gratuity",t:"Facilitate the transfer or withdrawal of PF and Gratuity as applicable."},
+    {id:"of12",n:12,own:"Finance",tl:"Within 2 working days",cat:"Payments",t:"Close VR payments and settle all outstanding dues and full and final settlement."},
+    {id:"of13",n:13,own:"HR Operations",tl:"LWD",cat:"Letters",t:"Archive the employee's physical and digital files."},
+    {id:"of14",n:14,own:"HR Operations",tl:"LWD plus 2 working days",cat:"Letters",t:"Issue the experience letter to the departing employee."},
+    {id:"of15",n:15,own:"HR Operations",tl:"LWD",cat:"Exit from Comms",t:"Remove employee's email from DLU, Mattermost, and WhatsApp group."}
+  ]}
+],
+"International Outgoing": [
+  {phase:"Pre departure", tasks:[
+    {id:"io1",n:1,own:"Finance",tl:"On receipt from Business Leads",cat:"Payments",t:"Process the VR and Deferred Payment Reimbursement."},
+    {id:"io2",n:2,own:"Finance Legal",tl:"On receipt from Business Leads",cat:"Recovery",t:"Initiate security deposit recovery through Legal and Finance if applicable."},
+    {id:"io3",n:3,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Separation Letter",t:"Draft and obtain signatures on the Separation Letter."},
+    {id:"io4",n:4,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Leaves",t:"Reconcile available leaves, pay out or transfer up to 5 days to new host country."},
+    {id:"io5",n:5,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Tax Consultation",t:"Schedule an offboarding tax briefing session."},
+    {id:"io6",n:6,own:"HR Operations",tl:"On receipt from Business Leads",cat:"Workday",t:"Complete required Workday actions for the outgoing IAA."},
+    {id:"io7",n:7,own:"HR Operations",tl:"LWD plus 2 working days",cat:"Insurance",t:"Discontinue employee's insurance and process refund of any pending amount."},
+    {id:"io8",n:8,own:"HRBP",tl:"On receipt from Business Leads",cat:"Communication",t:"Confirm the separation from the India Agreement."},
+    {id:"io9",n:9,own:"Travel Desk",tl:"On receipt from Business Leads",cat:"Repatriation Flights",t:"Arrange repatriation flight bookings for the employee."}
+  ]},
+  {phase:"Post departure", tasks:[
+    {id:"io10",n:10,own:"Finance",tl:"Post LWD",cat:"Bank Account",t:"Close the employee's India bank account."},
+    {id:"io11",n:11,own:"Finance",tl:"Post LWD",cat:"Payments",t:"Process the Repatriation Allowance payment."},
+    {id:"io12",n:12,own:"HR Operations",tl:"Post finance confirmation",cat:"Visa FRRO",t:"Initiate cancellation of the Visa and FRRO post finance confirmation."},
+    {id:"io13",n:13,own:"HR Operations",tl:"LWD",cat:"Communication",t:"Remove employee from DLU distribution list, Mattermost, and WhatsApp group."},
+    {id:"io14",n:14,own:"Travel Desk",tl:"LWD",cat:"Ola and Uber",t:"Deactivate the employee's Ola and Uber accounts."},
+    {id:"io15",n:15,own:"Travel Desk",tl:"LWD",cat:"Egencia",t:"Discontinue the employee's India Egencia account."}
+  ]}
+]
+};
 
-function toast(msg,type,dur){
-  const el=document.createElement("div");
-  el.className="toast "+type;
-  el.innerHTML='<span>'+(type==="ok"?"&#10003;":type==="err"?"&#10005;":"&#8505;")+'</span><span>'+msg+'</span>';
-  document.getElementById("toasts").appendChild(el);
-  setTimeout(()=>el.remove(),dur||4500);
+// ── STATE ────────────────────────────────────────────────────────────────────
+var emps = {};
+var selectedId = null;
+var SK = "imc_obt_v1";
+
+function loadData() {
+  try { var s = localStorage.getItem(SK); if (s) emps = JSON.parse(s); } catch(e) {}
 }
-
-
-
-function filterEmps(v){qry=v.toLowerCase();renderSidebar();}
-function goHome(){
-  sel=null;
-  document.getElementById("main").innerHTML="";
-  renderSidebar();
-  renderHome();
+function saveData() {
+  try { localStorage.setItem(SK, JSON.stringify(emps)); } catch(e) {}
 }
-
-function renderSidebar(){
-  const el=document.getElementById("eml");
-  const keys=Object.keys(emps).filter(id=>!qry||emps[id].name.toLowerCase().includes(qry));
-  document.getElementById("ecnt").textContent=Object.keys(emps).length;
-  if(!keys.length){el.innerHTML='<div class="empty">'+(qry?"No results":"No employees yet")+'</div>';return;}
-  el.innerHTML=keys.map(id=>{
-    const e=emps[id],p=pct(e),a=pal(id);
-    return '<div class="eit'+(sel===id?' act':'')+(sel===null?" act":sel===id?" act":"")+'" onclick="selectEmp(\''+id+'\')">'
-      +'<div class="av" style="background:'+a.bg+';color:'+a.c+'">'+inits(e.name)+'</div>'
-      +'<div style="flex:1;min-width:0"><div class="en">'+e.name+'</div><div class="er">'+(e.role||e.type)+'</div>'
-      +'<div class="mb"><div class="mf" style="width:'+p+'%"></div></div></div>'
-      +'<div class="ep">'+p+'%</div></div>';
-  }).join("");
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 }
-
-function renderHome(){
-  const area=document.getElementById("main");
-  const keys=Object.keys(emps);
-  const types=Object.keys(CL);
-  const totalEmps=keys.length;
-  const totalDone=keys.reduce((s,id)=>s+dn(emps[id]),0);
-  const totalTasks=keys.reduce((s,id)=>s+tks(emps[id].type).length,0);
-  const totalRem=totalTasks-totalDone;
-  const ovPct=totalTasks?Math.round(totalDone/totalTasks*100):0;
-
-  let html='<div class="hometitle">Dashboard Overview</div>'
-    +'<div class="homesub">India Operations · IMC · All employees at a glance</div>'
-
-    +'<div class="statgrid">'
-    +'<div class="statcard"><div class="statlbl">Total employees</div><div class="statval">'+totalEmps+'</div></div>'
-    +'<div class="statcard"><div class="statlbl">Tasks completed</div><div class="statval grn">'+totalDone+'</div></div>'
-    +'<div class="statcard"><div class="statlbl">Tasks remaining</div><div class="statval">'+totalRem+'</div></div>'
-    +'<div class="statcard"><div class="statlbl">Overall progress</div><div class="statval grn">'+ovPct+'%</div>'
-    +'<div class="statbar"><div class="statbarfill" style="width:'+ovPct+'%"></div></div></div>'
-    +'</div>';
-
-  html+='<div class="sectlbl">By checklist type</div><div class="typegrid">';
-  types.forEach(type=>{
-    const col=CL[type].col;
-    const empKeys=keys.filter(id=>emps[id].type===type);
-    const cnt=empKeys.length;
-    const d=empKeys.reduce((s,id)=>s+dn(emps[id]),0);
-    const tot=empKeys.reduce((s,id)=>s+tks(type).length,0);
-    const p=tot?Math.round(d/tot*100):0;
-    html+='<div class="typecard" style="background:'+col.bg+';border-color:'+col.dot+'44">'
-      +'<div class="typecname" style="color:'+col.c+'">'+type+'</div>'
-      +'<div class="typecval" style="color:'+col.c+'">'+cnt+'</div>'
-      +'<div class="typecmeta" style="color:'+col.c+'">employee'+(cnt!==1?'s':'')+'</div>'
-      +(cnt>0?'<div class="typecbar" style="background:'+col.dot+'33">'
-        +'<div class="typecbarfill" style="background:'+col.dot+';width:'+p+'%"></div></div>'
-        +'<div style="font-size:10px;color:'+col.c+';opacity:.7;margin-top:4px">'+p+'% tasks done</div>':'')
-      +'</div>';
-  });
-  html+='</div>';
-
-  if(keys.length>0){
-    html+='<div class="sectlbl">All employees</div>'
-      +'<div class="emptable"><table>'
-      +'<thead><tr>'
-      +'<th>Employee</th><th>Checklist type</th><th>DOJ</th><th>Progress</th><th>Tasks</th>'
-      +'</tr></thead><tbody>';
-    keys.forEach(id=>{
-      const e=emps[id],a=pal(id),p=pct(e),d=dn(e),tot=tks(e.type).length;
-      const col=CL[e.type].col;
-      html+='<tr onclick="selectEmp(\''+id+'\')">'
-        +'<td><div style="display:flex;align-items:center;gap:9px">'
-        +'<div style="width:28px;height:28px;border-radius:50%;background:'+a.bg+';color:'+a.c+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">'+inits(e.name)+'</div>'
-        +'<div><div style="font-weight:500">'+e.name+'</div><div style="font-size:11px;color:var(--tx3)">'+(e.role||'—')+'</div></div></div></td>'
-        +'<td><span class="typepill" style="background:'+col.bg+';color:'+col.c+'">'+type.replace("International ","Intl. ")+'</span></td>'.replace("type",e.type)
-        +'<td style="color:var(--tx2);font-size:12px">'+(e.doj||'—')+'</td>'
-        +'<td><div class="tpbar"><div class="tpbartrack"><div class="tpbarfill" style="width:'+p+'%"></div></div><span class="tppct">'+p+'%</span></div></td>'
-        +'<td style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--tx2)">'+d+'/'+tot+'</td>'
-
-        +'</tr>';
-    });
-    html+='</tbody></table></div>';
-  } else {
-    html+='<div style="background:var(--sur);border:1px solid var(--bor);border-radius:var(--rl);padding:40px;text-align:center;color:var(--tx3);font-size:13px">No employees added yet. Click &ldquo;+ Add new employee&rdquo; to get started.</div>';
+function initials(name) {
+  return name.trim().split(/\s+/).slice(0,2).map(function(w){ return w[0] || ""; }).join("").toUpperCase() || "?";
+}
+function avColor(id) {
+  var h = 0;
+  for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xfffffff;
+  return AV_PAL[h % AV_PAL.length];
+}
+function allTasks(type) {
+  var result = [];
+  var phases = CHECKLISTS[type];
+  for (var i = 0; i < phases.length; i++) {
+    for (var j = 0; j < phases[i].tasks.length; j++) {
+      result.push(phases[i].tasks[j]);
+    }
   }
-  area.innerHTML=html;
+  return result;
+}
+function doneCount(emp) {
+  var tasks = allTasks(emp.type);
+  var ch = emp.checks || {};
+  var count = 0;
+  for (var i = 0; i < tasks.length; i++) {
+    if (ch[tasks[i].id]) count++;
+  }
+  return count;
+}
+function pct(emp) {
+  var total = allTasks(emp.type).length;
+  return total ? Math.round(doneCount(emp) / total * 100) : 0;
 }
 
-function selectEmp(id){
-  sel=id;
-  renderSidebar();
-  const e=emps[id];
-  if(!e)return;
-  const a=pal(id),col=CL[e.type].col;
-  const d=dn(e),tot=tks(e.type).length,p=pct(e);
-  const phases=CL[e.type].phases;
-  const owners=[...new Set(tks(e.type).map(t=>t.own))].length;
+// ── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  var el = document.createElement("div");
+  el.className = "toast " + (type || "ok");
+  el.textContent = msg;
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(function(){ el.remove(); }, 4000);
+}
 
-  const jBtn='';
-
-  let html='<div class="ehdr">'
-    +'<div class="ehrow">'
-    +'<div class="avlg" style="background:'+a.bg+';color:'+a.c+'">'+inits(e.name)+'</div>'
-    +'<div><div class="ename">'+e.name+'</div><div class="emeta">'+[e.role,e.dept,e.doj?'DOJ: '+e.doj:''].filter(Boolean).join(' · ')+'</div></div>'
-    +'<div class="eacts">'
-    +'<button class="hbtn back" onclick="goHome()" style="font-weight:500">&#8592; Back to dashboard</button>'
-    +jBtn
-    +'<button class="hbtn" onclick="showEdit(\''+id+'\')">&#9998;</button>'
-    +'<button class="hbtn danger" onclick="delEmp(\''+id+'\')">&#10005;</button>'
-    +'</div></div>'
-    +'<div class="mets">'
-    +'<div class="met"><div class="metl">Total tasks</div><div class="metv">'+tot+'</div></div>'
-    +'<div class="met"><div class="metl">Completed</div><div class="metv grn">'+d+'</div></div>'
-    +'<div class="met"><div class="metl">Remaining</div><div class="metv">'+(tot-d)+'</div></div>'
-    +'<div class="met"><div class="metl">Phases</div><div class="metv">'+phases.length+'</div></div>'
-    +'<div class="met"><div class="metl">Owners</div><div class="metv">'+owners+'</div></div>'
-    +'<div class="met"><div class="metl">Progress</div><div class="metv grn">'+p+'%</div></div>'
-    +'</div>'
-    +'<div class="ptrak"><div class="pbar" style="width:'+p+'%"></div></div>'
-    +'<div class="plbl">'+e.type+': '+d+' of '+tot+' tasks completed</div>'
-    +'</div>'
-    +'<div class="cltype" style="background:'+col.bg+';border:1px solid '+col.dot+'44;color:'+col.c+'">'
-    +'<div style="width:8px;height:8px;border-radius:50%;background:'+col.dot+'"></div>'+e.type+'</div>';
-
-  phases.forEach(phase=>{
-    const ch=e.checks||{};
-    const pd=phase.tasks.filter(t=>ch[t.id]).length;
-    const pp=phase.tasks.length?pd/phase.tasks.length*100:0;
-    html+='<div class="phase"><div class="phdr">'
-      +'<span class="phnm">'+phase.name+'</span>'
-      +'<div class="phprog"><div class="phprogf" style="width:'+pp+'%"></div></div>'
-      +'<span class="phct">'+pd+'/'+phase.tasks.length+'</span>'
-      +'</div>';
-    phase.tasks.forEach(task=>{
-      const isDone=!!(ch[task.id]);
-      html+='<div class="task'+(isDone?' dn':'')+'" onclick="toggle(\''+id+'\',\''+task.id+'\')">'
-        +'<div class="tcb"><svg class="ck" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1"/></svg></div>'
-        +'<div style="flex:1;min-width:0"><div class="tt">'+task.n+'. '+task.t+'</div>'
-        +'<div class="tags"><span class="tag tago">'+task.own+'</span><span class="tag tagl">'+task.tl+'</span><span class="tag tagc">'+task.cat+'</span></div>'
-        +'</div></div>';
-    });
-    html+='</div>';
+// ── SIDEBAR ──────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  var q = document.getElementById("searchBox").value.toLowerCase();
+  var ids = Object.keys(emps).filter(function(id){
+    return !q || emps[id].name.toLowerCase().indexOf(q) !== -1;
   });
-  document.getElementById("main").innerHTML=html;
+  document.getElementById("empCount").textContent = Object.keys(emps).length;
+  var el = document.getElementById("empList");
+  if (!ids.length) {
+    el.innerHTML = '<div class="emptystate">' + (q ? "No results" : "No employees yet") + '</div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < ids.length; i++) {
+    var id = ids[i];
+    var e = emps[id];
+    var p = pct(e);
+    var a = avColor(id);
+    var active = selectedId === id ? " active" : "";
+    html += '<div class="empitem' + active + '" data-id="' + id + '">'
+      + '<div class="av" style="background:' + a.bg + ';color:' + a.c + '">' + initials(e.name) + '</div>'
+      + '<div class="einfo">'
+      + '<div class="ename">' + e.name + '</div>'
+      + '<div class="erole">' + (e.role || e.type) + '</div>'
+      + '<div class="minibar"><div class="minifill" style="width:' + p + '%"></div></div>'
+      + '</div>'
+      + '<div class="epct">' + p + '%</div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
+  // wire clicks
+  var items = el.querySelectorAll(".empitem");
+  for (var j = 0; j < items.length; j++) {
+    items[j].addEventListener("click", function(){
+      showEmployee(this.getAttribute("data-id"));
+    });
+  }
 }
 
-function toggle(id,tid){
-  if(!emps[id])return;
-  if(!emps[id].checks)emps[id].checks={};
-  emps[id].checks[tid]=!emps[id].checks[tid];
-  save();renderSidebar();selectEmp(id);
+// ── HOME ─────────────────────────────────────────────────────────────────────
+function showHome() {
+  selectedId = null;
+  renderSidebar();
+  var ids = Object.keys(emps);
+  var totalEmps = ids.length;
+  var totalDone = 0, totalTasks = 0;
+  for (var i = 0; i < ids.length; i++) {
+    totalDone += doneCount(emps[ids[i]]);
+    totalTasks += allTasks(emps[ids[i]].type).length;
+  }
+  var totalRem = totalTasks - totalDone;
+  var ovPct = totalTasks ? Math.round(totalDone / totalTasks * 100) : 0;
+
+  var html = '<div class="htitle">Dashboard Overview</div>'
+    + '<div class="hsub">India Operations &middot; IMC &middot; All employees at a glance</div>'
+    + '<div class="statgrid">'
+    + '<div class="statcard"><div class="statlbl">Total employees</div><div class="statval">' + totalEmps + '</div></div>'
+    + '<div class="statcard"><div class="statlbl">Tasks completed</div><div class="statval g">' + totalDone + '</div></div>'
+    + '<div class="statcard"><div class="statlbl">Tasks remaining</div><div class="statval">' + totalRem + '</div></div>'
+    + '<div class="statcard"><div class="statlbl">Overall progress</div><div class="statval g">' + ovPct + '%</div>'
+    + '<div class="statpbar"><div class="statpfill" style="width:' + ovPct + '%"></div></div></div>'
+    + '</div>';
+
+  html += '<div class="sectlbl">By checklist type</div><div class="typegrid">';
+  for (var t = 0; t < TYPES.length; t++) {
+    var type = TYPES[t];
+    var col = TYPE_COLORS[type];
+    var empIds = ids.filter(function(id){ return emps[id].type === type; });
+    var cnt = empIds.length;
+    var d = 0, tot = 0;
+    for (var k = 0; k < empIds.length; k++) {
+      d += doneCount(emps[empIds[k]]);
+      tot += allTasks(type).length;
+    }
+    var tp = tot ? Math.round(d / tot * 100) : 0;
+    html += '<div class="typecard" style="background:' + col.bg + ';border-color:' + col.dot + '44">'
+      + '<div class="tcname" style="color:' + col.c + '">' + type + '</div>'
+      + '<div class="tcval" style="color:' + col.c + '">' + cnt + '</div>'
+      + '<div class="tcmeta" style="color:' + col.c + '">employee' + (cnt !== 1 ? 's' : '') + '</div>'
+      + (cnt > 0 ? '<div class="tcbar" style="background:' + col.dot + '33"><div class="tcbarfill" style="background:' + col.dot + ';width:' + tp + '%"></div></div>'
+        + '<div style="font-size:10px;color:' + col.c + ';opacity:.7;margin-top:4px">' + tp + '% tasks done</div>' : '')
+      + '</div>';
+  }
+  html += '</div>';
+
+  if (ids.length > 0) {
+    html += '<div class="sectlbl">All employees</div>'
+      + '<div class="etable"><table>'
+      + '<thead><tr><th>Employee</th><th>Type</th><th>DOJ</th><th>Progress</th><th>Tasks</th></tr></thead>'
+      + '<tbody>';
+    for (var r = 0; r < ids.length; r++) {
+      var rid = ids[r];
+      var re = emps[rid];
+      var ra = avColor(rid);
+      var rp = pct(re);
+      var rd = doneCount(re);
+      var rtot = allTasks(re.type).length;
+      var rcol = TYPE_COLORS[re.type];
+      html += '<tr data-id="' + rid + '">'
+        + '<td><div style="display:flex;align-items:center;gap:9px">'
+        + '<div style="width:28px;height:28px;border-radius:50%;background:' + ra.bg + ';color:' + ra.c + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">' + initials(re.name) + '</div>'
+        + '<div><div style="font-weight:500">' + re.name + '</div><div style="font-size:11px;color:#9E9B94">' + (re.role || '—') + '</div></div>'
+        + '</div></td>'
+        + '<td><span class="tpill" style="background:' + rcol.bg + ';color:' + rcol.c + '">' + re.type.replace("International ","Intl. ") + '</span></td>'
+        + '<td style="color:#6B6860;font-size:12px">' + (re.doj || '—') + '</td>'
+        + '<td><div class="tprow"><div class="tptrack"><div class="tpfill" style="width:' + rp + '%"></div></div><span class="tppct">' + rp + '%</span></div></td>'
+        + '<td style="font-family:\'DM Mono\',monospace;font-size:12px;color:#6B6860">' + rd + '/' + rtot + '</td>'
+        + '</tr>';
+    }
+    html += '</tbody></table></div>';
+  } else {
+    html += '<div class="emptystate">No employees added yet. Click &ldquo;+ Add new employee&rdquo; to get started.</div>';
+  }
+
+  document.getElementById("mainArea").innerHTML = html;
+
+  // wire table row clicks
+  var rows = document.querySelectorAll(".etable tbody tr");
+  for (var rr = 0; rr < rows.length; rr++) {
+    rows[rr].addEventListener("click", function(){
+      showEmployee(this.getAttribute("data-id"));
+    });
+  }
 }
 
+// ── EMPLOYEE DETAIL ──────────────────────────────────────────────────────────
+function showEmployee(id) {
+  var e = emps[id];
+  if (!e) { showHome(); return; }
+  selectedId = id;
+  renderSidebar();
 
-function showAdd(){
-  document.getElementById("modinner").innerHTML=
+  var a = avColor(id);
+  var col = TYPE_COLORS[e.type];
+  var phases = CHECKLISTS[e.type];
+  var ch = e.checks || {};
+  var d = doneCount(e);
+  var tot = allTasks(e.type).length;
+  var p = pct(e);
+  var owners = [];
+  var tasks = allTasks(e.type);
+  for (var i = 0; i < tasks.length; i++) {
+    if (owners.indexOf(tasks[i].own) === -1) owners.push(tasks[i].own);
+  }
+
+  var html = '<div class="ehdr">'
+    + '<div class="ehrow">'
+    + '<div class="avlg" style="background:' + a.bg + ';color:' + a.c + '">' + initials(e.name) + '</div>'
+    + '<div><div class="ehname">' + e.name + '</div>'
+    + '<div class="ehmeta">' + [e.role, e.dept, e.doj ? 'DOJ: ' + e.doj : ''].filter(Boolean).join(' · ') + '</div></div>'
+    + '<div class="ehacts">'
+    + '<button class="hbtn back" id="backBtn">&larr; Back to dashboard</button>'
+    + '<button class="hbtn" id="editBtn">&#9998; Edit</button>'
+    + '<button class="hbtn del" id="delBtn">&#10005; Remove</button>'
+    + '</div></div>'
+    + '<div class="mets">'
+    + '<div class="met"><div class="metl">Total tasks</div><div class="metv">' + tot + '</div></div>'
+    + '<div class="met"><div class="metl">Completed</div><div class="metv g">' + d + '</div></div>'
+    + '<div class="met"><div class="metl">Remaining</div><div class="metv">' + (tot - d) + '</div></div>'
+    + '<div class="met"><div class="metl">Phases</div><div class="metv">' + phases.length + '</div></div>'
+    + '<div class="met"><div class="metl">Owners</div><div class="metv">' + owners.length + '</div></div>'
+    + '<div class="met"><div class="metl">Progress</div><div class="metv g">' + p + '%</div></div>'
+    + '</div>'
+    + '<div class="ptrack"><div class="pbar" style="width:' + p + '%"></div></div>'
+    + '<div class="plbl">' + e.type + ': ' + d + ' of ' + tot + ' tasks completed</div>'
+    + '</div>'
+    + '<div class="clbadge" style="background:' + col.bg + ';border:1px solid ' + col.dot + '44;color:' + col.c + '">'
+    + '<div class="clbadgedot" style="background:' + col.dot + '"></div>' + e.type + '</div>';
+
+  for (var ph = 0; ph < phases.length; ph++) {
+    var phase = phases[ph];
+    var pd = 0;
+    for (var ti = 0; ti < phase.tasks.length; ti++) {
+      if (ch[phase.tasks[ti].id]) pd++;
+    }
+    var pp = phase.tasks.length ? Math.round(pd / phase.tasks.length * 100) : 0;
+    html += '<div class="phase">'
+      + '<div class="phdr">'
+      + '<span class="phnm">' + phase.phase + '</span>'
+      + '<div class="phprog"><div class="phprogf" style="width:' + pp + '%"></div></div>'
+      + '<span class="phct">' + pd + '/' + phase.tasks.length + '</span>'
+      + '</div>';
+    for (var tk = 0; tk < phase.tasks.length; tk++) {
+      var task = phase.tasks[tk];
+      var isDone = !!ch[task.id];
+      html += '<div class="task' + (isDone ? ' done' : '') + '" data-empid="' + id + '" data-taskid="' + task.id + '">'
+        + '<div class="tcb"><svg class="cksvg" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1"/></svg></div>'
+        + '<div style="flex:1;min-width:0">'
+        + '<div class="ttxt">' + task.n + '. ' + task.t + '</div>'
+        + '<div class="tags">'
+        + '<span class="tag tago">' + task.own + '</span>'
+        + '<span class="tag tagl">' + task.tl + '</span>'
+        + '<span class="tag tagc">' + task.cat + '</span>'
+        + '</div></div></div>';
+    }
+    html += '</div>';
+  }
+
+  document.getElementById("mainArea").innerHTML = html;
+
+  // Wire buttons
+  document.getElementById("backBtn").addEventListener("click", function(){ showHome(); });
+  document.getElementById("editBtn").addEventListener("click", function(){ showEditModal(id); });
+  document.getElementById("delBtn").addEventListener("click", function(){ deleteEmployee(id); });
+
+  // Wire task checkboxes
+  var taskEls = document.querySelectorAll(".task[data-empid]");
+  for (var te = 0; te < taskEls.length; te++) {
+    taskEls[te].addEventListener("click", function(){
+      toggleTask(this.getAttribute("data-empid"), this.getAttribute("data-taskid"));
+    });
+  }
+}
+
+function toggleTask(empId, taskId) {
+  if (!emps[empId]) return;
+  if (!emps[empId].checks) emps[empId].checks = {};
+  emps[empId].checks[taskId] = !emps[empId].checks[taskId];
+  saveData();
+  showEmployee(empId);
+}
+
+function deleteEmployee(id) {
+  if (!confirm("Remove this employee? This cannot be undone.")) return;
+  delete emps[id];
+  saveData();
+  selectedId = null;
+  showHome();
+}
+
+// ── MODALS ───────────────────────────────────────────────────────────────────
+function openModal(html) {
+  document.getElementById("modalBox").innerHTML = html;
+  document.getElementById("modal").classList.add("open");
+}
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+}
+
+function showAddModal() {
+  openModal(
     '<div class="modtitle">Add new employee</div>'
-    +'<div class="fld"><label>Full name *</label><input id="mn" placeholder="e.g. Priya Sharma"/></div>'
-    +'<div class="fld"><label>Role / designation</label><input id="mr" placeholder="e.g. Analyst"/></div>'
-    +'<div class="fld"><label>Department</label><input id="md" placeholder="e.g. Finance"/></div>'
-    +'<div class="fld"><label>Date of joining</label><input id="mdoj" type="date"/></div>'
-    +'<div class="fld"><label>Checklist type</label><select id="mt">'
-    +'<option>Local Onboarding</option><option>International Incoming</option>'
-    +'<option>Local Offboarding</option><option>International Outgoing</option>'
-    +'</select></div>'
-    +'<div class="mbtns"><button class="mbtn" onclick="closeMod()">Cancel</button>'
-    +'<button class="mbtn pri" id="addsub" onclick="addEmp()">+ Add employee</button></div>';
-  document.getElementById("modal").classList.add("op");
+    + '<div class="fld"><label>Full name *</label><input id="mName" placeholder="e.g. Priya Sharma"/></div>'
+    + '<div class="fld"><label>Role / designation</label><input id="mRole" placeholder="e.g. Analyst"/></div>'
+    + '<div class="fld"><label>Department</label><input id="mDept" placeholder="e.g. Finance"/></div>'
+    + '<div class="fld"><label>Date of joining</label><input id="mDOJ" type="date"/></div>'
+    + '<div class="fld"><label>Checklist type</label><select id="mType">'
+    + '<option>Local Onboarding</option>'
+    + '<option>International Incoming</option>'
+    + '<option>Local Offboarding</option>'
+    + '<option>International Outgoing</option>'
+    + '</select></div>'
+    + '<div class="mbtns">'
+    + '<button class="mbtn" id="mCancel">Cancel</button>'
+    + '<button class="mbtn pri" id="mConfirm">+ Add employee</button>'
+    + '</div>'
+  );
+  document.getElementById("mCancel").addEventListener("click", closeModal);
+  document.getElementById("mConfirm").addEventListener("click", function(){
+    var name = document.getElementById("mName").value.trim();
+    if (!name) { alert("Please enter a name."); return; }
+    var id = genId();
+    emps[id] = {
+      name: name,
+      role: document.getElementById("mRole").value.trim(),
+      dept: document.getElementById("mDept").value.trim(),
+      doj: document.getElementById("mDOJ").value,
+      type: document.getElementById("mType").value,
+      checks: {}
+    };
+    saveData();
+    closeModal();
+    showToast(name + " added successfully.", "ok");
+    showEmployee(id);
+  });
 }
 
-function showEdit(id){
-  const e=emps[id];if(!e)return;
-  document.getElementById("modinner").innerHTML=
+function showEditModal(id) {
+  var e = emps[id];
+  if (!e) return;
+  openModal(
     '<div class="modtitle">Edit employee</div>'
-    +'<div class="fld"><label>Full name *</label><input id="mn" value="'+e.name+'"/></div>'
-    +'<div class="fld"><label>Role / designation</label><input id="mr" value="'+(e.role||'')+'"/></div>'
-    +'<div class="fld"><label>Department</label><input id="md" value="'+(e.dept||'')+'"/></div>'
-    +'<div class="fld"><label>Date of joining</label><input id="mdoj" type="date" value="'+(e.doj||'')+'"/></div>'
-    +'<div class="mbtns"><button class="mbtn" onclick="closeMod()">Cancel</button>'
-    +'<button class="mbtn pri" onclick="saveEdit(\''+id+'\')">Save changes</button></div>';
-  document.getElementById("modal").classList.add("op");
+    + '<div class="fld"><label>Full name *</label><input id="mName" value="' + e.name + '"/></div>'
+    + '<div class="fld"><label>Role / designation</label><input id="mRole" value="' + (e.role||'') + '"/></div>'
+    + '<div class="fld"><label>Department</label><input id="mDept" value="' + (e.dept||'') + '"/></div>'
+    + '<div class="fld"><label>Date of joining</label><input id="mDOJ" type="date" value="' + (e.doj||'') + '"/></div>'
+    + '<div class="mbtns">'
+    + '<button class="mbtn" id="mCancel">Cancel</button>'
+    + '<button class="mbtn pri" id="mConfirm">Save changes</button>'
+    + '</div>'
+  );
+  document.getElementById("mCancel").addEventListener("click", closeModal);
+  document.getElementById("mConfirm").addEventListener("click", function(){
+    var name = document.getElementById("mName").value.trim();
+    if (!name) { alert("Please enter a name."); return; }
+    emps[id].name = name;
+    emps[id].role = document.getElementById("mRole").value.trim();
+    emps[id].dept = document.getElementById("mDept").value.trim();
+    emps[id].doj = document.getElementById("mDOJ").value;
+    saveData();
+    closeModal();
+    showEmployee(id);
+  });
 }
 
-function addEmp(){
-  const name=document.getElementById("mn").value.trim();if(!name)return;
-  const btn=document.getElementById("addsub");
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Adding...';
-  const id=uid();
-  const e={name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value,type:document.getElementById("mt").value,checks:{}};
-  emps[id]=e;
-  save();closeMod();sel=id;renderSidebar();selectEmp(id);
-}
+// ── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById("homeNavBtn").addEventListener("click", showHome);
+document.getElementById("addBtn").addEventListener("click", showAddModal);
+document.getElementById("searchBox").addEventListener("input", renderSidebar);
+document.getElementById("modal").addEventListener("click", function(e){
+  if (e.target === this) closeModal();
+});
 
-function saveEdit(id){
-  const name=document.getElementById("mn").value.trim();if(!name)return;
-  Object.assign(emps[id],{name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value});
-  save();closeMod();renderSidebar();selectEmp(id);
-}
-
-function delEmp(id){
-  if(!confirm('Remove this employee? This cannot be undone.'))return;
-  delete emps[id];if(sel===id)sel=null;save();renderSidebar();renderHome();
-}
-
-function closeMod(){document.getElementById("modal").classList.remove("op");}
-document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeMod();});
-
-load();renderSidebar();renderHome();
-
+loadData();
+renderSidebar();
+showHome();
 </script>
 </body>
 </html>
