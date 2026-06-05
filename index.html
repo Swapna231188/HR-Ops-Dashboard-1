@@ -128,7 +128,7 @@ a.jlink:hover{text-decoration:underline}
       <div class="nav-sub">India Operations · IMC</div>
     </div>
   </div>
-  <div class="nav-right">
+  <div class="nav-right"><button class="icon-btn" onclick="sel=null;renderHome()" title="Dashboard home" style="font-size:13px;font-weight:600">⌂</button>
     <div class="badge"><div class="bdot"></div>Jira connected</div>
   </div>
 </nav>
@@ -311,7 +311,7 @@ function inits(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join(
 function pal(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))&0xfffffff;return PAL[h%PAL.length];}
 function tks(cl){return DATA[cl].phases.flatMap(p=>p.tasks);}
 function dnCnt(e,cl){const ch=e.checks[cl]||{};return tks(cl).filter(t=>ch[t.id]).length;}
-function ovPct(e){const k=Object.keys(DATA);const d=k.reduce((s,cl)=>s+dnCnt(e,cl),0),tot=k.reduce((s,cl)=>s+tks(cl).length,0);return tot?Math.round(d/tot*100):0;}
+function ovPct(e){const t=tks(e.type).length;const d=dnCnt(e,e.type);return t?Math.round(d/t*100):0;}
 
 function toast(msg,type,dur){
   dur=dur||4500;
@@ -374,12 +374,117 @@ function renderSidebar(){
   }).join("");
 }
 
-function selectEmp(id){sel=id;renderSidebar();renderMain();}
+function selectEmp(id){sel=id;if(emps[id])curCL=emps[id].type;renderSidebar();renderMain();}
+
+function renderHome(){
+  const area=document.getElementById("main");
+  const keys=Object.keys(emps);
+  const total=keys.length;
+  const clTypes=["Local Onboarding","International Incoming","Local Offboarding","International Outgoing"];
+
+  // Count by type
+  const byType={};
+  clTypes.forEach(t=>byType[t]=0);
+  keys.forEach(id=>{const t=emps[id].type;if(byType[t]!==undefined)byType[t]++;});
+
+  // Overall stats
+  const totalTasks=keys.reduce((s,id)=>s+tks(emps[id].type).length,0);
+  const totalDone=keys.reduce((s,id)=>s+dnCnt(emps[id],emps[id].type),0);
+  const overallPct=totalTasks?Math.round(totalDone/totalTasks*100):0;
+
+  const typeColors={
+    "Local Onboarding":{bg:"#EFF6FF",c:"#1D4ED8",dot:"#2563EB"},
+    "International Incoming":{bg:"#F0FDF4",c:"#15803D",dot:"#16A34A"},
+    "Local Offboarding":{bg:"#FFF7ED",c:"#C2410C",dot:"#EA580C"},
+    "International Outgoing":{bg:"#FDF4FF",c:"#7E22CE",dot:"#9333EA"}
+  };
+
+  let html="<div style='margin-bottom:24px'>"
+    +"<div style='font-size:20px;font-weight:600;color:var(--text);margin-bottom:4px'>Dashboard Overview</div>"
+    +"<div style='font-size:13px;color:var(--text2)'>India Operations · IMC · All employees at a glance</div></div>";
+
+  // Top stat cards
+  html+="<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:24px'>"
+    +"<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px'>"
+    +"<div style='font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Total employees</div>"
+    +"<div style='font-size:32px;font-weight:600;color:var(--text);font-family:"DM Mono",monospace'>"+total+"</div></div>"
+    +"<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px'>"
+    +"<div style='font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Tasks completed</div>"
+    +"<div style='font-size:32px;font-weight:600;color:var(--green);font-family:"DM Mono",monospace'>"+totalDone+"</div></div>"
+    +"<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px'>"
+    +"<div style='font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Tasks remaining</div>"
+    +"<div style='font-size:32px;font-weight:600;color:var(--text);font-family:"DM Mono",monospace'>"+(totalTasks-totalDone)+"</div></div>"
+    +"<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:16px'>"
+    +"<div style='font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px'>Overall progress</div>"
+    +"<div style='font-size:32px;font-weight:600;color:var(--green);font-family:"DM Mono",monospace'>"+overallPct+"%</div>"
+    +"<div style='height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-top:8px'><div style='height:100%;background:var(--green);border-radius:2px;width:"+overallPct+"%'></div></div></div>"
+    +"</div>";
+
+  // By checklist type
+  html+="<div style='font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px'>By checklist type</div>"
+    +"<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px'>";
+  clTypes.forEach(t=>{
+    const col=typeColors[t];
+    const cnt=byType[t];
+    const empKeys=keys.filter(id=>emps[id].type===t);
+    const done=empKeys.reduce((s,id)=>s+dnCnt(emps[id],t),0);
+    const tot2=empKeys.reduce((s,id)=>s+tks(t).length,0);
+    const p=tot2?Math.round(done/tot2*100):0;
+    html+="<div style='background:"+col.bg+";border:1px solid "+col.dot+"33;border-radius:var(--rl2);padding:14px'>"
+      +"<div style='font-size:12px;font-weight:600;color:"+col.c+";margin-bottom:10px'>"+t+"</div>"
+      +"<div style='font-size:28px;font-weight:700;color:"+col.c+";font-family:"DM Mono",monospace;margin-bottom:4px'>"+cnt+"</div>"
+      +"<div style='font-size:11px;color:"+col.c+";opacity:.75;margin-bottom:8px'>employee"+(cnt!==1?"s":"")+"</div>"
+      +(cnt>0?"<div style='height:3px;background:"+col.dot+"33;border-radius:2px;overflow:hidden'><div style='height:100%;background:"+col.dot+";border-radius:2px;width:"+p+"%'></div></div>"
+      +"<div style='font-size:10px;color:"+col.c+";opacity:.7;margin-top:4px'>"+p+"% tasks done</div>":"")
+      +"</div>";
+  });
+  html+="</div>";
+
+  // Employee table
+  if(keys.length>0){
+    html+="<div style='font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px'>All employees</div>"
+      +"<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);overflow:hidden'>"
+      +"<table style='width:100%;border-collapse:collapse;font-size:13px'>"
+      +"<thead><tr style='background:var(--surface2)'>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>Employee</th>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>Type</th>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>DOJ</th>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>Progress</th>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>Tasks</th>"
+      +"<th style='padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em'>Jira</th>"
+      +"</tr></thead><tbody>";
+    keys.forEach((id,i)=>{
+      const e=emps[id],a=pal(id),p=ovPct(e);
+      const d=dnCnt(e,e.type),tot3=tks(e.type).length;
+      const col=typeColors[e.type]||{bg:"#F0EEE9",c:"#6B6860"};
+      const bg=i%2===0?"var(--surface)":"var(--bg)";
+      html+="<tr style='background:"+bg+";cursor:pointer' onclick='selectEmp(""+id+"")'>"
+        +"<td style='padding:10px 14px'><div style='display:flex;align-items:center;gap:9px'>"
+        +"<div style='width:28px;height:28px;border-radius:50%;background:"+a.bg+";color:"+a.c+";display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0'>"+inits(e.name)+"</div>"
+        +"<div><div style='font-weight:500;color:var(--text)'>"+e.name+"</div>"
+        +"<div style='font-size:11px;color:var(--text3)'>"+(e.role||"—")+"</div></div></div></td>"
+        +"<td style='padding:10px 14px'><span style='font-size:11px;padding:3px 8px;border-radius:10px;background:"+col.bg+";color:"+col.c+";font-weight:500'>"+e.type.replace("International ","Intl. ")+"</span></td>"
+        +"<td style='padding:10px 14px;color:var(--text2);font-size:12px'>"+(e.doj||"—")+"</td>"
+        +"<td style='padding:10px 14px;min-width:100px'>"
+        +"<div style='display:flex;align-items:center;gap:8px'>"
+        +"<div style='flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden'><div style='height:100%;background:var(--green);border-radius:2px;width:"+p+"%'></div></div>"
+        +"<span style='font-size:11px;font-weight:600;color:var(--green);font-family:"DM Mono",monospace;min-width:28px'>"+p+"%</span></div></td>"
+        +"<td style='padding:10px 14px;font-family:"DM Mono",monospace;font-size:12px;color:var(--text2)'>"+d+"/"+tot3+"</td>"
+        +"<td style='padding:10px 14px'>"+(e.jiraUrl?"<a href='"+e.jiraUrl+"' target='_blank' style='font-size:11px;color:var(--blue);text-decoration:none;padding:3px 8px;background:var(--bl);border-radius:6px;border:1px solid #BFDBFE'>Open &#8599;</a>":"<span style='font-size:11px;color:var(--text3)'>—</span>")+"</td>"
+        +"</tr>";
+    });
+    html+="</tbody></table></div>";
+  } else {
+    html+="<div style='background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:40px;text-align:center;color:var(--text3);font-size:13px'>No employees added yet. Click "+ Add new employee" to get started.</div>";
+  }
+
+  area.innerHTML=html;
+}
 
 function renderMain(){
   const area=document.getElementById("main");
   if(!sel||!emps[sel]){
-    area.innerHTML="<div class='welcome'><div class='w-icon'>&#128101;</div><div class='w-title'>Select or add an employee</div><div class='w-sub'>Click \"+ Add new employee\" in the sidebar. A Jira project will be created automatically at imcfm.atlassian.net.</div></div>";
+    renderHome();
     return;
   }
   const e=emps[sel],a=pal(sel),clKeys=Object.keys(DATA),cl=curCL;
@@ -396,15 +501,15 @@ function renderMain(){
     +"<button class='hbtn' onclick='showEdit(\""+sel+"\")'>&#9998; Edit</button>"
     +"<button class='hbtn danger' onclick='delEmp(\""+sel+"\")'>&#10005;</button></div></div>"
     +"<div class='metrics'>"
-    +clKeys.map(k=>"<div class='met'><div class='ml'>"+k.replace("International ","Intl.")+"</div><div class='mv'>"+dnCnt(e,k)+"<span style='font-size:12px;color:var(--text3)'>"+"/"+tks(k).length+"</span></div></div>").join("")
+    +"<div class='met'><div class='ml'>Total tasks</div><div class='mv'>"+tks(e.type).length+"</div></div>"
     +"<div class='met'><div class='ml'>Overall</div><div class='mv green'>"+Math.round(at?ad/at*100:0)+"%</div></div></div>"
     +"<div class='ptrack'><div class='pbar' style='width:"+p+"%'></div></div>"
-    +"<div class='plbl'>"+cl+": "+d+" of "+tot+" tasks completed</div></div>";
+    +"<div class='plbl'>"+e.type+": "+d+" of "+tot+" tasks completed</div></div>";
 
   html+="<div class='cl-tabs'>"+clKeys.map(k=>"<button class='cl-tab"+(k===cl?" active":"")+"' onclick='switchCL(\""+k+"\")'>"
     +k.replace("International ","Intl. ")+"<span class='ctn'>"+dnCnt(e,k)+"/"+tks(k).length+"</span></button>").join("")+"</div>";
 
-  DATA[cl].phases.forEach(phase=>{
+  DATA[e.type].phases.forEach(phase=>{
     const ch=e.checks[cl]||{},pd=phase.tasks.filter(t=>ch[t.id]).length,pp=phase.tasks.length?pd/phase.tasks.length*100:0;
     html+="<div class='phase'><div class='ph'><span class='pnm'>"+phase.name+"</span>"
       +"<div class='pp'><div class='ppf' style='width:"+pp+"%'></div></div>"
@@ -422,7 +527,7 @@ function renderMain(){
 }
 
 function switchCL(cl){curCL=cl;renderMain();}
-function toggle(id,cl,tid){if(!emps[id])return;if(!emps[id].checks[cl])emps[id].checks[cl]={};emps[id].checks[cl][tid]=!emps[id].checks[cl][tid];save();renderSidebar();renderMain();}
+function toggle(id,cl,tid){if(!emps[id])return;const ct=emps[id].type;if(!emps[id].checks[ct])emps[id].checks[ct]={};emps[id].checks[ct][tid]=!emps[id].checks[ct][tid];save();renderSidebar();renderMain();}
 
 async function retryJira(id){
   const e=emps[id];if(!e)return;
