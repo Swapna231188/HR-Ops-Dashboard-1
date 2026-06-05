@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding Tracker — India Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F3;--surface:#fff;--surface2:#F0EEE9;--border:#E4E1DA;--border2:#D0CCC3;--text:#1A1917;--text2:#6B6860;--text3:#9E9B94;--green:#1D9E75;--gl:#E1F5EE;--gm:#9FE1CB;--blue:#2563EB;--bl:#EFF6FF;--purple:#7C3AED;--pl:#F5F3FF;--red:#DC2626;--rl:#FEF2F2;--r:10px;--rl2:14px;--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 16px rgba(0,0,0,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:30px;height:30px;background:var(--text);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700}
+.nav-title{font-size:14px;font-weight:600}
+.nav-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:8px}
+.badge{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:20px}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px)}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.sb-head{padding:14px 14px 10px;border-bottom:1px solid var(--border)}
+.sb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.sb-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em}
+.sb-count{font-size:11px;color:var(--text3);background:var(--surface2);padding:2px 7px;border-radius:10px}
+.search{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none}
+.search::placeholder{color:var(--text3)}
+.emp-list{flex:1;overflow-y:auto;padding:8px}
+.emp-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r);cursor:pointer;transition:background .12s;margin-bottom:2px}
+.emp-item:hover,.emp-item.active{background:var(--surface2)}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.ei{flex:1;min-width:0}
+.en{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.er{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbar{height:2px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
+.mfill{height:100%;background:var(--green);border-radius:2px}
+.epct{font-size:11px;font-weight:500;color:var(--text3);flex-shrink:0;font-family:"DM Mono",monospace}
+.add-btn{margin:8px;padding:10px;border:1px dashed var(--border2);border-radius:var(--r);background:none;font-family:"DM Sans",sans-serif;font-size:13px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.add-btn:hover{background:var(--surface2);color:var(--text)}
+.main{padding:22px;overflow-y:auto}
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center}
+.w-icon{font-size:40px;margin-bottom:16px}
+.w-title{font-size:18px;font-weight:500;margin-bottom:8px}
+.w-sub{font-size:13px;color:var(--text2);max-width:320px;line-height:1.65}
+.emp-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl2);padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
+.hrow{display:flex;align-items:flex-start;gap:13px;margin-bottom:16px}
+.av-lg{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.hinfo{flex:1}
+.hname{font-size:17px;font-weight:600}
+.hmeta{font-size:12px;color:var(--text2);margin-top:3px}
+.hacts{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.hbtn{padding:6px 12px;border:1px solid var(--border);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--text2);display:flex;align-items:center;gap:5px;transition:all .15s;text-decoration:none}
+.hbtn:hover{background:var(--surface2);color:var(--text)}
+.hbtn.jira{background:var(--bl);color:var(--blue);border-color:#BFDBFE}
+.hbtn.jira:hover{background:#DBEAFE}
+.hbtn.danger{color:var(--red);border-color:#FECACA}
+.hbtn.danger:hover{background:var(--rl)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:13px}
+.met{background:var(--bg);border-radius:var(--r);padding:10px 12px}
+.ml{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.mv{font-size:19px;font-weight:600;font-family:"DM Mono",monospace}
+.mv.green{color:var(--green)}
+.ptrack{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.pbar{height:100%;background:var(--green);border-radius:3px;transition:width .4s ease}
+.plbl{font-size:11px;color:var(--text3);font-family:"DM Mono",monospace}
+.cl-tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.cl-tab{padding:6px 13px;border:1px solid var(--border);border-radius:20px;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--text2);transition:all .15s;white-space:nowrap}
+.cl-tab:hover{border-color:var(--border2);color:var(--text)}
+.cl-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+.ctn{font-size:10px;opacity:.65;margin-left:3px;font-family:"DM Mono",monospace}
+.phase{margin-bottom:20px}
+.ph{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.pnm{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em}
+.pp{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;max-width:72px}
+.ppf{height:100%;background:var(--green);border-radius:2px}
+.pct{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--surface2);color:var(--text3);font-family:"DM Mono",monospace}
+.task{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:var(--r);cursor:pointer;margin-bottom:2px;transition:background .1s}
+.task:hover{background:var(--surface2)}
+.task.done{opacity:.45}
+.tcb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--surface)}
+.task.done .tcb{background:var(--green);border-color:var(--green)}
+.ck{width:10px;height:10px;stroke:#fff;stroke-width:2.5;fill:none;display:none}
+.task.done .ck{display:block}
+.tb{flex:1;min-width:0}
+.tt{font-size:13px;color:var(--text);line-height:1.45}
+.task.done .tt{text-decoration:line-through;color:var(--text3)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.to{background:var(--bl);color:var(--blue)}
+.tl{background:var(--gl);color:#065F46}
+.tc{background:var(--pl);color:var(--purple)}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--rl2);padding:24px;width:100%;max-width:420px;box-shadow:var(--shm);animation:su .2s ease}
+@keyframes su{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtitle{font-size:15px;font-weight:600;margin-bottom:18px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.field input,.field select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;color:var(--text);background:var(--surface);outline:none}
+.info-box{border-radius:var(--r);padding:11px 13px;margin-bottom:12px;font-size:12px;line-height:1.55}
+.info-box.blue{background:var(--bl);border:1px solid #BFDBFE;color:#1E40AF}
+.mbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.mbtn{padding:8px 16px;border:1px solid var(--border);border-radius:var(--r);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--text2);transition:all .15s}
+.mbtn:hover{background:var(--surface2)}
+.mbtn.primary{background:var(--text);color:#fff;border-color:var(--text)}
+.mbtn.primary:hover{background:#2d2c2a}
+.mbtn:disabled{opacity:.5;cursor:not-allowed}
+#toasts{position:fixed;bottom:18px;right:18px;z-index:300;display:flex;flex-direction:column;gap:7px}
+.toast{padding:11px 15px;border-radius:var(--r);font-size:13px;box-shadow:var(--shm);display:flex;align-items:flex-start;gap:8px;animation:ti .2s ease;max-width:340px;line-height:1.4}
+@keyframes ti{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{background:var(--gl);color:#065F46;border:1px solid var(--gm)}
+.toast.error{background:var(--rl);color:#991B1B;border:1px solid #FECACA}
+.toast.info{background:var(--bl);color:#1E40AF;border:1px solid #BFDBFE}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;margin-top:1px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{padding:24px;text-align:center;font-size:12px;color:var(--text3)}
+a.jlink{color:var(--blue);font-size:12px;text-decoration:none}
+a.jlink:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">OT</div>
+    <div>
+      <div class="nav-title">Onboarding Tracker</div>
+      <div class="nav-sub">India Operations · IMC</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="badge"><div class="bdot"></div>Jira connected</div>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-row">
+        <span class="sb-label">Employees</span>
+        <span class="sb-count" id="emp-count">0</span>
+      </div>
+      <input class="search" placeholder="Search employees…" oninput="filterEmps(this.value)"/>
+    </div>
+    <div class="emp-list" id="emp-list"></div>
+    <button class="add-btn" onclick="showAdd()">+ Add new employee</button>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="modal-ov" id="modal"><div class="modal" id="modal-inner"></div></div>
+<div id="toasts"></div>
+
+<script>
+const JIRA_SITE = "imcfm.atlassian.net";
+const JIRA_EMAIL = "Swapna.sawant@imc.com";
+const JIRA_TOKEN = "ATATT3xFfGF0ImpF3zrxzW0Dz7TW3ueEK7rTVoeg_OLlP5SP9lyw5qYclvR9kOKo3dU4uK6GOux5E_Ip29gQ6it0e_wxnxLVMS9YUfPRlH8sJxHPQ2hHW6B4O4c19YDeChcvULa7xHIisbC1nJ6aYHwfsuSdnG45V5rbbZeji9K-kwK_gZsQ0hI=9CCE671B";
+
+const DATA={
+"Local Onboarding":{phases:[
+{name:"Pre onboarding",tasks:[
+{id:"lo1",n:1,cat:"Relocation",own:"Employee",tl:"Ongoing",t:"Raise reimbursement request on Workday if relocation allowance was paid in advance."},
+{id:"lo2",n:2,cat:"Insurance",own:"Finance",tl:"On receipt of email",t:"Update employee and dependent details in insurance records."},
+{id:"lo3",n:3,cat:"PF Passbook",own:"Finance",tl:"On receipt of email",t:"Update the employee's PF passbook details on the EPFO portal."},
+{id:"lo4",n:4,cat:"ADP Enrolment",own:"Finance",tl:"Near to DOJ",t:"Update employee records in the ADP portal."},
+{id:"lo5",n:5,cat:"Communication",own:"HR Operations",tl:"On receipt from Recruitment",t:"Confirm DOJ with candidate and inform about HireRight as BGV vendor."},
+{id:"lo6",n:6,cat:"Tracker Update",own:"HR Operations",tl:"On receipt from Recruitment",t:"Update the respective columns in the Employee Onboarding Checklist."},
+{id:"lo7",n:7,cat:"Calendar",own:"HR Operations",tl:"On receipt from Recruitment",t:"Block calendar with Compliance, IT, and Jocelyn for onboarding coordination."},
+{id:"lo8",n:8,cat:"Calendar",own:"HR Operations",tl:"On receipt from Recruitment",t:"Block calendar with stakeholders for induction sessions."},
+{id:"lo9",n:9,cat:"Communication",own:"HR Operations",tl:"2 weeks prior to DOJ",t:"Email candidate to collect insurance, PF passbook, Connect post, and laptop preference."},
+{id:"lo10",n:10,cat:"Communication",own:"HR Operations",tl:"2 weeks prior to DOJ",t:"Share the Onboarding Plan with the Buddy or Manager via email."},
+{id:"lo11",n:11,cat:"Communication",own:"HR Operations",tl:"2 days prior to joining",t:"Email candidate with joining details, Day 1 plan, and point-of-contact information."},
+{id:"lo12",n:12,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Complete all pending Workday activities."},
+{id:"lo13",n:13,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Initiate and close the BGV from the Workday task."},
+{id:"lo14",n:14,cat:"Relocation",own:"HR Operations",tl:"Ongoing",t:"Initiate relocation email covering flights and accommodation."},
+{id:"lo15",n:15,cat:"Connect Post",own:"HR Operations",tl:"On receipt of email",t:"Create the Connect post on Canva and upload to the Connect platform."},
+{id:"lo16",n:16,cat:"Insurance",own:"HR Operations",tl:"On receipt of email",t:"Share candidate's insurance details with Finance (Pooja Parab)."},
+{id:"lo17",n:17,cat:"PF Passbook",own:"HR Operations",tl:"On receipt of email",t:"Follow up with candidate to share their PF passbook details."},
+{id:"lo18",n:18,cat:"POSH Training",own:"HR Operations",tl:"Near to DOJ",t:"Obtain the POSH training login credentials from the vendor."},
+{id:"lo19",n:19,cat:"Desk Allocation",own:"HR Operations",tl:"Near to DOJ",t:"Confirm seating arrangement with manager and inform Facility team."},
+{id:"lo20",n:20,cat:"Relocation",own:"Neha",tl:"Ongoing",t:"Carry out and close all relocation-related activities."},
+{id:"lo21",n:21,cat:"Communication",own:"Recruitment Team",tl:"On Hire",t:"Share offer packet, confirm relocation eligibility and traineeship details."},
+{id:"lo22",n:22,cat:"Tracker Update",own:"Recruitment Team",tl:"On Hire",t:"Update the Employee Onboarding Checklist with relevant details."}
+]},
+{name:"Onboarding - Day 1",tasks:[
+{id:"lo23",n:23,cat:"Welcome Kit",own:"Facility",tl:"On the DOJ",t:"Arrange welcome kit on designated desk before new joiner arrives."},
+{id:"lo24",n:24,cat:"Office Tour",own:"HR Operations",tl:"On the DOJ",t:"Conduct an office tour for the new joiner."},
+{id:"lo25",n:25,cat:"Induction",own:"HR Operations",tl:"On the DOJ",t:"Conduct all induction sessions for the new joiner."},
+{id:"lo26",n:26,cat:"HR Induction",own:"HR Operations",tl:"On the DOJ",t:"Conduct HR Induction covering Workday and system orientation."},
+{id:"lo27",n:27,cat:"Payroll Induction",own:"HR Operations",tl:"On the DOJ",t:"Carry out Payroll and Benefits induction for the new joiner."},
+{id:"lo28",n:28,cat:"Connect Post",own:"HR Operations",tl:"On the DOJ",t:"Verify that the Connect post is live and active."},
+{id:"lo29",n:29,cat:"Channel Addition",own:"HR Operations",tl:"On the DOJ",t:"Add new joiner to WhatsApp group, DLU distribution list, and Mattermost."},
+{id:"lo30",n:30,cat:"Box Folder",own:"HR Operations",tl:"On the DOJ",t:"Copy candidate's Box folder from Recruitment to HR Compensation folder."},
+{id:"lo31",n:31,cat:"Onboarding Plan",own:"HR Operations",tl:"On the DOJ",t:"Share the complete onboarding plan with the new joiner."},
+{id:"lo32",n:32,cat:"POSH Certificate",own:"HR Operations",tl:"On the DOJ",t:"Share POSH training login credentials with the new joiner."},
+{id:"lo33",n:33,cat:"Audit Induction",own:"HR Operations",tl:"On the DOJ",t:"Email Edjaz to add new joiner for the Audit Induction session."},
+{id:"lo34",n:34,cat:"HRBP Connect",own:"HRBP",tl:"On the DOJ",t:"Facilitate the HRBP's introductory connect with the new joiner."},
+{id:"lo35",n:35,cat:"IT Allocation",own:"IT Team",tl:"On the DOJ",t:"Complete the IT setup for the new joiner."},
+{id:"lo36",n:36,cat:"Ola and Uber",own:"Travel Desk",tl:"On the DOJ",t:"Grant Ola and Uber access to the new joiner's email ID."}
+]},
+{name:"Post onboarding - 1st month",tasks:[
+{id:"lo37",n:37,cat:"CHRO Connect",own:"HR Operations",tl:"Within 1st month",t:"Schedule a monthly connect session between the new joiner and the CHRO."},
+{id:"lo38",n:38,cat:"Compliance Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Compliance Induction for the new joiner."},
+{id:"lo39",n:39,cat:"Risk Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Risk Induction for the new joiner."},
+{id:"lo40",n:40,cat:"Legal Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Legal Induction for the new joiner."},
+{id:"lo41",n:41,cat:"Info Sec Induction",own:"HR Operations",tl:"Within 1st month",t:"Conduct Information Security Induction for the new joiner."},
+{id:"lo42",n:42,cat:"POSH Certificate",own:"HR Operations",tl:"Within 1st month",t:"Download and save the POSH training completion certificate."},
+{id:"lo43",n:43,cat:"BGV Report",own:"HR Operations",tl:"Within 1st month",t:"Save the BGV completion report in the employee's Box folder."}
+]}
+]},
+"International Incoming":{phases:[
+{name:"Pre arrival",tasks:[
+{id:"ii1",n:1,cat:"Tax Guidance",own:"Deloitte",tl:"Ongoing",t:"Conduct the tax briefing and guide on the annual documentation process."},
+{id:"ii2",n:2,cat:"Visa Initiation",own:"Employee",tl:"On commencement of transfer",t:"Initiate the Visa application process for the IAA."},
+{id:"ii3",n:3,cat:"Visa Documentation",own:"Employee",tl:"On commencement of Visa",t:"Submit all required documents for Visa initiation."},
+{id:"ii4",n:4,cat:"Visa Confirmation",own:"Employee",tl:"Ongoing",t:"Review and confirm the provisional Visa application for self and dependents."},
+{id:"ii5",n:5,cat:"Insurance",own:"Finance",tl:"Ongoing",t:"Process the insurance payment."},
+{id:"ii6",n:6,cat:"Agreement Details",own:"HR Operations",tl:"On receipt from Business Leads",t:"Receive and acknowledge arrival details of the IAA from Business Lead."},
+{id:"ii7",n:7,cat:"Benefits Intro",own:"HR Operations",tl:"On receipt from Business Leads",t:"Discuss and explain the applicable benefits with the incoming IAA."},
+{id:"ii8",n:8,cat:"Tax Consultation",own:"HR Operations",tl:"Ongoing",t:"Email Deloitte to schedule an incoming tax briefing session for the IAA."},
+{id:"ii9",n:9,cat:"Insurance",own:"HR Operations",tl:"Ongoing",t:"Email insurance agent WR for insurance setup and closure."},
+{id:"ii10",n:10,cat:"Workday",own:"HR Operations",tl:"Ongoing",t:"Complete required Workday tasks as an approver."},
+{id:"ii11",n:11,cat:"House Search",own:"HR Operations",tl:"Ongoing",t:"Share broker's contact details with the employee for house-hunting."},
+{id:"ii12",n:12,cat:"Agreement",own:"HR Operations",tl:"Ongoing",t:"Ensure the exchange rate is mentioned in the contract."},
+{id:"ii13",n:13,cat:"Additional Allowance",own:"HR Operations",tl:"Ongoing",t:"Email Finance for relocation and brokerage allowance payment."},
+{id:"ii14",n:14,cat:"ID Card",own:"HR Operations",tl:"Ongoing",t:"Print the ID card and grant building access."},
+{id:"ii15",n:15,cat:"Reporting Details",own:"HRBP",tl:"Ongoing",t:"Share manager reporting line and cost centre details from host country HRBP."},
+{id:"ii16",n:16,cat:"Desk Allocation",own:"Manager",tl:"Ongoing",t:"Confirm seating arrangement with the manager."},
+{id:"ii17",n:17,cat:"Visa Documentation",own:"Travel Desk",tl:"Ongoing",t:"Print, sign, and stamp the Tax Undertaking Letter and Undertaking Letters for Dependents."},
+{id:"ii18",n:18,cat:"Visa Application",own:"Travel Desk",tl:"Ongoing",t:"Print, sign, and stamp the Invitation Letter for dependents."},
+{id:"ii19",n:19,cat:"Accommodation",own:"Travel Desk",tl:"Ongoing",t:"Arrange hotel and flight bookings for the employee."},
+{id:"ii20",n:20,cat:"Egencia Login",own:"Travel Desk",tl:"Ongoing",t:"Activate the Egencia account for the incoming IAA."},
+{id:"ii21",n:21,cat:"Visa Documentation",own:"Visa Agent",tl:"Ongoing",t:"Draft the Tax Undertaking Letter and Undertaking Letters for Dependents."},
+{id:"ii22",n:22,cat:"Visa Application",own:"Visa Agent",tl:"Ongoing",t:"Prepare and submit the provisional Visa application for employee and dependents."},
+{id:"ii23",n:23,cat:"Visa Application",own:"Visa Agent",tl:"Ongoing",t:"Prepare the Invitation Letter for dependents if applicable."},
+{id:"ii24",n:24,cat:"PAN Application",own:"Visa Agent",tl:"Ongoing",t:"Send the PAN application to the employee for signature."}
+]},
+{name:"Post arrival",tasks:[
+{id:"ii25",n:25,cat:"Hotel Form C",own:"Employee",tl:"Within 2-3 days of arrival",t:"Collect and submit Form C from the hotel."},
+{id:"ii26",n:26,cat:"Visa Confirmation",own:"Employee",tl:"Ongoing",t:"Share signed PAN application and courier physical documents."},
+{id:"ii27",n:27,cat:"Bank Account",own:"Employee",tl:"Post account number receipt",t:"Update India bank account details in Workday."},
+{id:"ii28",n:28,cat:"Rented Flat Form C",own:"Employee",tl:"Post moving to flat",t:"Submit Form C received from the landlord upon moving to a flat."},
+{id:"ii29",n:29,cat:"Tax Consultation",own:"Finance",tl:"Lifecycle",t:"Provide ongoing tax consultation covering 26AS and TDS filing throughout tenure."},
+{id:"ii30",n:30,cat:"Additional Allowance",own:"Finance",tl:"Post bank account update",t:"Process the relocation and brokerage allowance payment."},
+{id:"ii31",n:31,cat:"SIM Card",own:"HR Operations",tl:"Day 1",t:"Provide a SIM card to the incoming IAA."},
+{id:"ii32",n:32,cat:"Insurance Copy",own:"HR Operations",tl:"Day 1",t:"Save a copy of the insurance document in the employee's Box folder."},
+{id:"ii33",n:33,cat:"Bank Account",own:"HR Operations",tl:"Post Form C and FRRO",t:"Initiate and complete bank account opening post Form C and FRRO."},
+{id:"ii34",n:34,cat:"POSH Training",own:"HR Operations",tl:"Day 1",t:"Initiate POSH training for the incoming employee."},
+{id:"ii35",n:35,cat:"Mandatory Trainings",own:"HR Operations",tl:"Day 1",t:"Schedule induction sessions for Audit, Risk, Legal, Compliance, and InfoSec."},
+{id:"ii36",n:36,cat:"Connect Post",own:"HR Operations",tl:"Day 1",t:"Update the transfer details on the Connect platform."},
+{id:"ii37",n:37,cat:"Leave Accrual",own:"HR Operations",tl:"Day 1",t:"Accrue leaves as directed by the home office."},
+{id:"ii38",n:38,cat:"Group Addition",own:"HR Operations",tl:"Day 1",t:"Add employee to DLU distribution list, Mattermost channel, and HR team groups."},
+{id:"ii39",n:39,cat:"Ola and Uber Access",own:"Travel Desk",tl:"Day 1",t:"Assign Ola and Uber access to the employee's account."},
+{id:"ii40",n:40,cat:"Aadhaar Card",own:"Visa Agent",tl:"Post moving to flat",t:"Submit the Aadhaar card application upon moving to a flat."}
+]}
+]},
+"Local Offboarding":{phases:[
+{name:"Pre offboarding",tasks:[
+{id:"of1",n:1,cat:"Agreement Letter",own:"HR Operations",tl:"On receipt of resignation",t:"Draft and issue the termination letter to the employee."},
+{id:"of2",n:2,cat:"Resignation Email",own:"HR Operations",tl:"On receipt of resignation",t:"Save the resignation email in the employee's Box folder."},
+{id:"of3",n:3,cat:"Communication",own:"HR Operations",tl:"On receipt of resignation",t:"Send a farewell email and update the internal team."},
+{id:"of4",n:4,cat:"Workday",own:"HR Operations",tl:"On confirmation from HRBP",t:"Update employee records in Workday upon HRBP confirmation."},
+{id:"of5",n:5,cat:"Letters",own:"HR Operations",tl:"During notice period",t:"Issue the termination letter for involuntary exits if applicable."},
+{id:"of6",n:6,cat:"Communication",own:"HRBP",tl:"On receipt of resignation",t:"Acknowledge and confirm employee's last working day."},
+{id:"of7",n:7,cat:"Work Handover",own:"Manager",tl:"Notice period",t:"Obtain confirmation of work handover from the manager."}
+]},
+{name:"Offboarding - last working day",tasks:[
+{id:"of8",n:8,cat:"ID Card",own:"Facility",tl:"LWD",t:"Collect and secure the employee's ID card on the Last Working Day."},
+{id:"of9",n:9,cat:"IT Handover",own:"IT Team",tl:"LWD",t:"Confirm the return of the ID card."},
+{id:"of10",n:10,cat:"Laptop and Mobile",own:"IT Team",tl:"LWD",t:"Revoke system access, collect laptop, mobile, and accessories."}
+]},
+{name:"Post offboarding",tasks:[
+{id:"of11",n:11,cat:"PF and Gratuity",own:"Finance",tl:"Post LWD",t:"Facilitate the transfer or withdrawal of PF and Gratuity as applicable."},
+{id:"of12",n:12,cat:"Payments",own:"Finance",tl:"Within 2 working days",t:"Close VR payments and settle all outstanding dues and full and final settlement."},
+{id:"of13",n:13,cat:"Letters",own:"HR Operations",tl:"LWD",t:"Archive the employee's physical and digital files."},
+{id:"of14",n:14,cat:"Letters",own:"HR Operations",tl:"LWD plus 2 working days",t:"Issue the experience letter to the departing employee."},
+{id:"of15",n:15,cat:"Exit from Comms",own:"HR Operations",tl:"LWD",t:"Remove employee's email from DLU, Mattermost, and WhatsApp group."}
+]}
+]},
+"International Outgoing":{phases:[
+{name:"Pre departure",tasks:[
+{id:"io1",n:1,cat:"Payments",own:"Finance",tl:"On receipt from Business Leads",t:"Process the VR and Deferred Payment Reimbursement."},
+{id:"io2",n:2,cat:"Recovery",own:"Finance Legal",tl:"On receipt from Business Leads",t:"Initiate security deposit recovery through Legal and Finance if applicable."},
+{id:"io3",n:3,cat:"Separation Letter",own:"HR Operations",tl:"On receipt from Business Leads",t:"Draft and obtain signatures on the Separation Letter."},
+{id:"io4",n:4,cat:"Leaves",own:"HR Operations",tl:"On receipt from Business Leads",t:"Reconcile available leaves, pay out or transfer up to 5 days to new host country."},
+{id:"io5",n:5,cat:"Tax Consultation",own:"HR Operations",tl:"On receipt from Business Leads",t:"Schedule an offboarding tax briefing session."},
+{id:"io6",n:6,cat:"Workday",own:"HR Operations",tl:"On receipt from Business Leads",t:"Complete required Workday actions for the outgoing IAA."},
+{id:"io7",n:7,cat:"Insurance",own:"HR Operations",tl:"LWD plus 2 working days",t:"Discontinue employee's insurance and process refund of any pending amount."},
+{id:"io8",n:8,cat:"Communication",own:"HRBP",tl:"On receipt from Business Leads",t:"Confirm the separation from the India Agreement."},
+{id:"io9",n:9,cat:"Repatriation Flights",own:"Travel Desk",tl:"On receipt from Business Leads",t:"Arrange repatriation flight bookings for the employee."}
+]},
+{name:"Post departure",tasks:[
+{id:"io10",n:10,cat:"Bank Account",own:"Finance",tl:"Post LWD",t:"Close the employee's India bank account."},
+{id:"io11",n:11,cat:"Payments",own:"Finance",tl:"Post LWD",t:"Process the Repatriation Allowance payment."},
+{id:"io12",n:12,cat:"Visa FRRO",own:"HR Operations",tl:"Post finance confirmation",t:"Initiate cancellation of the Visa and FRRO post finance confirmation."},
+{id:"io13",n:13,cat:"Communication",own:"HR Operations",tl:"LWD",t:"Remove employee from DLU distribution list, Mattermost, and WhatsApp group."},
+{id:"io14",n:14,cat:"Ola and Uber",own:"Travel Desk",tl:"LWD",t:"Deactivate the employee's Ola and Uber accounts."},
+{id:"io15",n:15,cat:"Egencia",own:"Travel Desk",tl:"LWD",t:"Discontinue the employee's India Egencia account."}
+]}
+]}
+};
+
+const PAL=[{bg:"#EFF6FF",c:"#1D4ED8"},{bg:"#F0FDF4",c:"#15803D"},{bg:"#FDF4FF",c:"#7E22CE"},{bg:"#FFF7ED",c:"#C2410C"},{bg:"#FFF1F2",c:"#BE123C"},{bg:"#F0FDFA",c:"#0F766E"}];
+let emps={},sel=null,curCL="Local Onboarding",qry="";
+const SK="obt_imc_v1";
+
+function load(){try{const s=localStorage.getItem(SK);if(s)emps=JSON.parse(s);}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(emps));}catch(e){}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function inits(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()||"?";}
+function pal(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))&0xfffffff;return PAL[h%PAL.length];}
+function tks(cl){return DATA[cl].phases.flatMap(p=>p.tasks);}
+function dnCnt(e,cl){const ch=e.checks[cl]||{};return tks(cl).filter(t=>ch[t.id]).length;}
+function ovPct(e){const k=Object.keys(DATA);const d=k.reduce((s,cl)=>s+dnCnt(e,cl),0),tot=k.reduce((s,cl)=>s+tks(cl).length,0);return tot?Math.round(d/tot*100):0;}
+
+function toast(msg,type,dur){
+  dur=dur||4500;
+  const el=document.createElement("div");
+  el.className="toast "+type;
+  const icons={success:"&#10003;",error:"&#10005;",info:"&#8505;"};
+  el.innerHTML="<span>"+(icons[type]||"&#8505;")+"</span><span>"+msg+"</span>";
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(()=>el.remove(),dur);
+}
+
+async function jiraFetch(path,method,body){
+  const url="https://"+JIRA_SITE+"/rest/api/3/"+path;
+  const r=await fetch(url,{method:method,headers:{"Authorization":"Basic "+btoa(JIRA_EMAIL+":"+JIRA_TOKEN),"Content-Type":"application/json","Accept":"application/json"},body:body?JSON.stringify(body):undefined});
+  if(!r.ok){const e=await r.text();throw new Error(e);}
+  return r.json();
+}
+
+async function createJiraProject(e){
+  const cl=e.type;
+  const raw=e.name.replace(/[^A-Za-z]/g,"").toUpperCase();
+  const key=("IMC"+(raw.slice(0,3))+Date.now().toString(36).slice(-2)).slice(0,10);
+  toast("Creating Jira project for "+e.name+"... this may take a moment.","info",20000);
+  const proj=await jiraFetch("project","POST",{
+    key:key,
+    name:e.name+" - "+cl,
+    projectTypeKey:"software",
+    projectTemplateKey:"com.pyxis.greenhopper.jira:gh-simplified-agility-scrum",
+    description:"Onboarding checklist for "+e.name+". Type: "+cl+". DOJ: "+(e.doj||"TBD")+". Created by Onboarding Tracker."
+  });
+  const pk=proj.key;
+  for(const phase of DATA[cl].phases){
+    for(const task of phase.tasks){
+      await jiraFetch("issue","POST",{fields:{
+        project:{key:pk},
+        summary:"["+phase.name+"] "+task.n+". "+task.t,
+        description:{type:"doc",version:1,content:[{type:"paragraph",content:[{type:"text",text:"Owner: "+task.own+"\nTimeline: "+task.tl+"\nCategory: "+task.cat}]}]},
+        issuetype:{name:"Task"},
+        labels:[task.own.replace(/[\s\/\-]+/g,"_"),task.cat.replace(/[\s\/\-]+/g,"_")]
+      }});
+    }
+  }
+  return{pk:pk,url:"https://"+JIRA_SITE+"/jira/software/projects/"+pk+"/boards"};
+}
+
+function filterEmps(v){qry=v.toLowerCase();renderSidebar();}
+
+function renderSidebar(){
+  const el=document.getElementById("emp-list");
+  const keys=Object.keys(emps).filter(id=>!qry||emps[id].name.toLowerCase().includes(qry));
+  document.getElementById("emp-count").textContent=Object.keys(emps).length;
+  if(!keys.length){el.innerHTML='<div class="empty">'+(qry?"No results":"No employees yet. Click + Add below.")+"</div>";return;}
+  el.innerHTML=keys.map(id=>{
+    const e=emps[id],p=ovPct(e),a=pal(id);
+    return"<div class='emp-item"+(sel===id?" active":"")+"' onclick='selectEmp(\""+id+"\")'>"
+      +"<div class='av' style='background:"+a.bg+";color:"+a.c+"'>"+inits(e.name)+"</div>"
+      +"<div class='ei'><div class='en'>"+e.name+"</div><div class='er'>"+(e.role||e.type||"—")+"</div>"
+      +"<div class='mbar'><div class='mfill' style='width:"+p+"%'></div></div></div>"
+      +"<div class='epct'>"+p+"%</div></div>";
+  }).join("");
+}
+
+function selectEmp(id){sel=id;renderSidebar();renderMain();}
+
+function renderMain(){
+  const area=document.getElementById("main");
+  if(!sel||!emps[sel]){
+    area.innerHTML="<div class='welcome'><div class='w-icon'>&#128101;</div><div class='w-title'>Select or add an employee</div><div class='w-sub'>Click \"+ Add new employee\" in the sidebar. A Jira project will be created automatically at imcfm.atlassian.net.</div></div>";
+    return;
+  }
+  const e=emps[sel],a=pal(sel),clKeys=Object.keys(DATA),cl=curCL;
+  const tt=tks(cl),d=dnCnt(e,cl),tot=tt.length,p=tot?Math.round(d/tot*100):0;
+  const ad=clKeys.reduce((s,k)=>s+dnCnt(e,k),0),at=clKeys.reduce((s,k)=>s+tks(k).length,0);
+  const jBtn=e.jiraUrl
+    ?"<a href='"+e.jiraUrl+"' target='_blank' class='hbtn jira'>&#11043; Open in Jira</a>"
+    :"<button class='hbtn jira' onclick='retryJira(\""+sel+"\")'>&#11043; Create Jira project</button>";
+  let html="<div class='emp-hdr'>"
+    +"<div class='hrow'>"
+    +"<div class='av-lg' style='background:"+a.bg+";color:"+a.c+"'>"+inits(e.name)+"</div>"
+    +"<div class='hinfo'><div class='hname'>"+e.name+"</div><div class='hmeta'>"+[e.role,e.dept,e.doj?"DOJ: "+e.doj:""].filter(Boolean).join(" · ")+"</div></div>"
+    +"<div class='hacts'>"+jBtn
+    +"<button class='hbtn' onclick='showEdit(\""+sel+"\")'>&#9998; Edit</button>"
+    +"<button class='hbtn danger' onclick='delEmp(\""+sel+"\")'>&#10005;</button></div></div>"
+    +"<div class='metrics'>"
+    +clKeys.map(k=>"<div class='met'><div class='ml'>"+k.replace("International ","Intl.")+"</div><div class='mv'>"+dnCnt(e,k)+"<span style='font-size:12px;color:var(--text3)'>"+"/"+tks(k).length+"</span></div></div>").join("")
+    +"<div class='met'><div class='ml'>Overall</div><div class='mv green'>"+Math.round(at?ad/at*100:0)+"%</div></div></div>"
+    +"<div class='ptrack'><div class='pbar' style='width:"+p+"%'></div></div>"
+    +"<div class='plbl'>"+cl+": "+d+" of "+tot+" tasks completed</div></div>";
+
+  html+="<div class='cl-tabs'>"+clKeys.map(k=>"<button class='cl-tab"+(k===cl?" active":"")+"' onclick='switchCL(\""+k+"\")'>"
+    +k.replace("International ","Intl. ")+"<span class='ctn'>"+dnCnt(e,k)+"/"+tks(k).length+"</span></button>").join("")+"</div>";
+
+  DATA[cl].phases.forEach(phase=>{
+    const ch=e.checks[cl]||{},pd=phase.tasks.filter(t=>ch[t.id]).length,pp=phase.tasks.length?pd/phase.tasks.length*100:0;
+    html+="<div class='phase'><div class='ph'><span class='pnm'>"+phase.name+"</span>"
+      +"<div class='pp'><div class='ppf' style='width:"+pp+"%'></div></div>"
+      +"<span class='pct'>"+pd+"/"+phase.tasks.length+"</span></div>";
+    phase.tasks.forEach(task=>{
+      const isDone=!!(ch[task.id]);
+      html+="<div class='task"+(isDone?" done":"")+"' onclick='toggle(\""+sel+"\",\""+cl+"\",\""+task.id+"\")'>"
+        +"<div class='tcb'><svg class='ck' viewBox='0 0 10 8'><polyline points='1,4 3.5,7 9,1'/></svg></div>"
+        +"<div class='tb'><div class='tt'>"+task.n+". "+task.t+"</div>"
+        +"<div class='tags'><span class='tag to'>"+task.own+"</span><span class='tag tl'>"+task.tl+"</span><span class='tag tc'>"+task.cat+"</span></div></div></div>";
+    });
+    html+="</div>";
+  });
+  area.innerHTML=html;
+}
+
+function switchCL(cl){curCL=cl;renderMain();}
+function toggle(id,cl,tid){if(!emps[id])return;if(!emps[id].checks[cl])emps[id].checks[cl]={};emps[id].checks[cl][tid]=!emps[id].checks[cl][tid];save();renderSidebar();renderMain();}
+
+async function retryJira(id){
+  const e=emps[id];if(!e)return;
+  try{
+    const{pk,url}=await createJiraProject(e);
+    e.jiraProjKey=pk;e.jiraUrl=url;save();
+    toast("Jira project "+pk+" created! <a href='"+url+"' target='_blank' class='jlink'>Open &#8599;</a>","success",8000);
+    renderMain();
+  }catch(err){toast("Jira error: "+err.message,"error",8000);}
+}
+
+function showAdd(){
+  document.getElementById("modal-inner").innerHTML=
+    "<div class='mtitle'>Add new employee</div>"
+    +"<div class='field'><label>Full name *</label><input id='mn' placeholder='e.g. Priya Sharma'/></div>"
+    +"<div class='field'><label>Role / designation</label><input id='mr' placeholder='e.g. Analyst'/></div>"
+    +"<div class='field'><label>Department</label><input id='md' placeholder='e.g. Finance'/></div>"
+    +"<div class='field'><label>Date of joining</label><input id='mdoj' type='date'/></div>"
+    +"<div class='field'><label>Checklist type</label><select id='mt'><option>Local Onboarding</option><option>International Incoming</option><option>Local Offboarding</option><option>International Outgoing</option></select></div>"
+    +"<div class='info-box blue'>&#11043; A Jira project will be auto-created at imcfm.atlassian.net with all tasks as issues.</div>"
+    +"<div class='mbtns'><button class='mbtn' onclick='closeModal()'>Cancel</button><button class='mbtn primary' id='add-submit' onclick='addEmp()'>+ Add &amp; create Jira project</button></div>";
+  document.getElementById("modal").classList.add("open");
+}
+
+function showEdit(id){
+  const e=emps[id];if(!e)return;
+  document.getElementById("modal-inner").innerHTML=
+    "<div class='mtitle'>Edit employee</div>"
+    +"<div class='field'><label>Full name *</label><input id='mn' value='"+e.name+"'/></div>"
+    +"<div class='field'><label>Role / designation</label><input id='mr' value='"+(e.role||"")+"'/></div>"
+    +"<div class='field'><label>Department</label><input id='md' value='"+(e.dept||"")+"'/></div>"
+    +"<div class='field'><label>Date of joining</label><input id='mdoj' type='date' value='"+(e.doj||"")+"'/></div>"
+    +"<div class='mbtns'><button class='mbtn' onclick='closeModal()'>Cancel</button><button class='mbtn primary' onclick='saveEdit(\""+id+"\")'>Save changes</button></div>";
+  document.getElementById("modal").classList.add("open");
+}
+
+async function addEmp(){
+  const name=document.getElementById("mn").value.trim();if(!name)return;
+  const btn=document.getElementById("add-submit");
+  btn.disabled=true;btn.innerHTML="<span class='spin'></span> Creating Jira project...";
+  const type=document.getElementById("mt").value;
+  const id=uid();
+  const e={name:name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value,type:type,checks:{},jiraProjKey:null,jiraUrl:null};
+  emps[id]=e;
+  try{
+    const{pk,url}=await createJiraProject(e);
+    e.jiraProjKey=pk;e.jiraUrl=url;
+    toast("Jira project "+pk+" created for "+name+"! <a href='"+url+"' target='_blank' class='jlink'>Open &#8599;</a>","success",10000);
+  }catch(err){
+    toast("Employee added but Jira project failed: "+err.message,"error",8000);
+  }
+  save();closeModal();curCL=type;sel=id;renderSidebar();renderMain();
+}
+
+function saveEdit(id){
+  const name=document.getElementById("mn").value.trim();if(!name)return;
+  Object.assign(emps[id],{name:name,role:document.getElementById("mr").value.trim(),dept:document.getElementById("md").value.trim(),doj:document.getElementById("mdoj").value});
+  save();closeModal();renderSidebar();renderMain();
+}
+
+function delEmp(id){
+  if(!confirm("Remove this employee? Their Jira project will remain on imcfm.atlassian.net."))return;
+  delete emps[id];if(sel===id)sel=null;save();renderSidebar();renderMain();
+}
+function closeModal(){document.getElementById("modal").classList.remove("open");}
+document.getElementById("modal").addEventListener("click",function(e){if(e.target===e.currentTarget)closeModal();});
+
+load();renderSidebar();renderMain();
+</script>
+</body>
+</html>
