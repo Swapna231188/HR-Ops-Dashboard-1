@@ -992,7 +992,10 @@ function renderAddForm(type) {
       + fld("mManager","Manager *","text","e.g. Jan de Vries",true)
       + fld("mTeam","Team *","text","e.g. Equity Derivatives",true)
       + fld("mDOJ","Transfer date *","date","",true)
-      + radioField("mTransferType","Transfer type *",["Temporary Transfer","Permanent Transfer"],true)
+      + radioFieldWithText("mTransferType","Transfer type *",[
+          {value:"Temporary Transfer", textId:"mTransferRegionII1", placeholder:"e.g. Netherlands, Amsterdam"},
+          {value:"Permanent Transfer", textId:"mTransferRegionII2", placeholder:"e.g. Germany, Frankfurt"}
+        ],true)
       + '<div id="mTempEndWrap" style="display:none">'
       + fld("mTempEnd","Temporary assignment end date *","date","",false)
       + '<div id="mAssignDays" style="display:none;margin-top:4px;padding:6px 10px;background:#E1F5EE;border-radius:8px;font-size:12px;font-weight:600;color:#065F46"></div>'
@@ -1055,7 +1058,7 @@ function renderAddForm(type) {
   for (var ri = 0; ri < radios.length; ri++) {
     radios[ri].addEventListener("change", function() {
       // Hide all region text wraps first
-      var allWraps = ["mTransferRegion1Wrap","mTransferRegion2Wrap"];
+      var allWraps = ["mTransferRegion1Wrap","mTransferRegion2Wrap","mTransferRegionII1Wrap","mTransferRegionII2Wrap"];
       allWraps.forEach(function(wid) {
         var w = document.getElementById(wid);
         if (w) w.style.display = "none";
@@ -1107,7 +1110,7 @@ function radioFieldWithText(id, label, options, required) {
       + '</label>'
       + '<div id="' + opt.textId + 'Wrap" style="display:none;margin-top:4px;padding-left:4px">'
       + '<input id="' + opt.textId + '" type="text" placeholder="' + opt.placeholder + '" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/>'
-      + '<div style="font-size:11px;color:#9E9B94;margin-top:3px">Enter the region</div>'
+      + '<div style="font-size:11px;color:#9E9B94;margin-top:3px">Enter the region / country you are transferring from or to</div>'
       + '</div></div>';
   });
   html += '</div></div>';
@@ -1249,6 +1252,16 @@ function addEmp() {
     e.role = val("mRole"); e.manager = val("mManager"); e.team = val("mTeam");
     e.doj = val("mDOJ"); e.dept = e.team;
     e.transferType = transferType;
+    // Capture from-region
+    if (transferType === "Temporary Transfer") {
+      var iiRegion1 = val("mTransferRegionII1");
+      if (iiRegion1) e.fromRegion = iiRegion1;
+      e.transferType = "Temporary Transfer" + (iiRegion1 ? " — from " + iiRegion1 : "");
+    } else if (transferType === "Permanent Transfer") {
+      var iiRegion2 = val("mTransferRegionII2");
+      if (iiRegion2) e.fromRegion = iiRegion2;
+      e.transferType = "Permanent Transfer" + (iiRegion2 ? " — from " + iiRegion2 : "");
+    }
     if (isTemp) {
       e.tempEnd = val("mTempEnd");
       var d1 = new Date(e.doj), d2 = new Date(e.tempEnd);
