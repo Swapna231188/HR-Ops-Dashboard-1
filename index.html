@@ -154,7 +154,7 @@ nav{background:#fff;border-bottom:1px solid #E4E1DA;padding:0 24px;display:flex;
     <span class="nsub">&middot; India Operations &middot; IMC</span>
   </div>
   <div style="display:flex;align-items:center;gap:8px">
-    <button class="homebtn" id="exportBtn" style="width:auto;padding:0 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;color:#1D9E75;border-color:#9FE1CB">&#8681; Export Excel</button>
+    <button class="homebtn" id="exportBtn" style="width:auto;padding:0 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;color:#1D9E75;border-color:#9FE1CB">&#8681; Export CSV</button>
     <button class="homebtn" id="homeNavBtn" title="Go to dashboard">&#8962;</button>
   </div>
 </nav>
@@ -528,7 +528,7 @@ function showHome() {
   var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'
     + '<div class="htitle">HR Dashboard</div>'
     + '<div style="display:flex;gap:8px">'
-    + '<button class="hbtn" onclick="exportToExcel()" style="color:#1D9E75;border-color:#9FE1CB;font-weight:500">&#8681; Export all data</button>'
+    + '<button class="hbtn" onclick="exportToExcel()" style="color:#1D9E75;border-color:#9FE1CB;font-weight:500">&#8681; Export all (CSV)</button>'
     + '</div></div>'
     + '<div class="hsub">India Operations &middot; IMC &middot; All employees at a glance</div>'
     + '<div class="statgrid">'
@@ -697,8 +697,8 @@ function buildEmpInfo(e) {
   } else if (e.type === 'Local Offboarding') {
     fields += infoField('Last working day', e.lwd || e.doj);
     fields += infoField('Termination date', e.termDate);
-    fields += infoField('Garden leave', e.gardenLeave);
-    fields += infoField('Non-compete', e.nonCompete);
+    fields += infoField('Garden leave', e.gardenLeave && e.gardenLeave !== 'No' ? e.gardenLeave : (e.gardenLeave === 'No' ? 'No' : '—'));
+    fields += infoField('Non-compete', e.nonCompete && e.nonCompete !== 'No' ? e.nonCompete : (e.nonCompete === 'No' ? 'No' : '—'));
   } else if (e.type === 'International Outgoing') {
     fields += infoField('Next position', e.role);
     fields += infoField('Next manager', e.nextManager);
@@ -975,14 +975,20 @@ function renderAddForm(type) {
 
   container.innerHTML = fields;
 
-  // Wire garden leave / non-compete toggles
-  ["mGardenLeave","mNonCompete"].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener("change", function() {
-      var rangeId = id + "Range";
-      var rangeEl = document.getElementById(rangeId + "Wrap");
-      if (rangeEl) rangeEl.style.display = this.checked ? "block" : "none";
+  // Wire garden leave / non-compete toggles + day calculators
+  ["mGardenLeave","mNonCompete"].forEach(function(toggleId) {
+    var el = document.getElementById(toggleId);
+    if (!el) return;
+    el.addEventListener("change", function() {
+      var rangeId = toggleId + "Range";
+      var wrap = document.getElementById(rangeId + "Wrap");
+      if (wrap) wrap.style.display = this.checked ? "block" : "none";
     });
+    var rangeId = toggleId + "Range";
+    var fromEl = document.getElementById(rangeId + "From");
+    var toEl   = document.getElementById(rangeId + "To");
+    if (fromEl) fromEl.addEventListener("change", function(){ calcDays(rangeId); });
+    if (toEl)   toEl.addEventListener("change",   function(){ calcDays(rangeId); });
   });
 }
 
@@ -993,12 +999,50 @@ function fld(id, label, type, placeholder, required) {
 }
 
 function toggle(checkId, checkLabel, rangeId, rangeLabel) {
-  return '<div class="fld" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
-    + '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#1A1917;cursor:pointer;min-width:160px">'
+  return '<div class="fld">'
+    + '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#1A1917;cursor:pointer;margin-bottom:6px">'
     + '<input type="checkbox" id="' + checkId + '" style="width:15px;height:15px;cursor:pointer"/> ' + checkLabel + '</label>'
-    + '<div id="' + rangeId + 'Wrap" style="display:none;flex:1">'
-    + '<input id="' + rangeId + '" type="text" placeholder="e.g. 01 Jun – 30 Aug 2026" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/>'
+    + '<div id="' + rangeId + 'Wrap" style="display:none">'
+    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+    + '<div style="flex:1;min-width:120px"><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">From</div>'
+    + '<input id="' + rangeId + 'From" type="date" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/></div>'
+    + '<div style="flex:1;min-width:120px"><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">To</div>'
+    + '<input id="' + rangeId + 'To" type="date" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/></div>'
+    + '</div>'
+    + '<div id="' + rangeId + 'Days" style="display:none;margin-top:6px;padding:6px 10px;background:#E1F5EE;border-radius:8px;font-size:12px;font-weight:600;color:#065F46"></div>'
+    + '<input type="hidden" id="' + rangeId + '"/>'
     + '</div></div>';
+}
+
+function calcDays(rangeId) {
+  var fromEl = document.getElementById(rangeId + "From");
+  var toEl   = document.getElementById(rangeId + "To");
+  var daysEl = document.getElementById(rangeId + "Days");
+  var hiddenEl = document.getElementById(rangeId);
+  if (!fromEl || !toEl || !daysEl || !hiddenEl) return;
+  var from = fromEl.value, to = toEl.value;
+  if (from && to) {
+    var d1 = new Date(from), d2 = new Date(to);
+    var days = Math.round((d2 - d1) / 86400000);
+    if (days >= 0) {
+      daysEl.style.display = "block";
+      daysEl.textContent = "✓ " + days + " day" + (days !== 1 ? "s" : "") + "  (" + formatDate(d1) + " – " + formatDate(d2) + ")";
+      hiddenEl.value = formatDate(d1) + " – " + formatDate(d2) + " (" + days + " days)";
+    } else {
+      daysEl.style.display = "block";
+      daysEl.style.background = "#FEF2F2";
+      daysEl.style.color = "#DC2626";
+      daysEl.textContent = "⚠ End date is before start date";
+      hiddenEl.value = "";
+    }
+  } else {
+    daysEl.style.display = "none";
+    hiddenEl.value = from && !to ? formatDate(new Date(from)) + " – ?" : "";
+  }
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"});
 }
 
 
@@ -1112,17 +1156,26 @@ function makeTable(rows, headers) {
   }).join("");
   return "<table border='1' style='border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px'>" + th + tr + "</table>";
 }
-function downloadXLS(filename, title, tableHtml) {
-  var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'
-    + '<head><meta charset="UTF-8"></head><body>'
-    + '<h2 style="font-family:Arial;color:#1A1917">' + esc(title) + '</h2>'
-    + '<p style="font-family:Arial;font-size:11px;color:#888">Generated: ' + new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) + '</p><br>'
-    + tableHtml + '</body></html>';
-  var blob = new Blob([html], {type:"application/vnd.ms-excel;charset=utf-8"});
+function downloadCSV(filename, rows) {
+  // Build proper CSV - no warnings in Excel, Numbers, or Google Sheets
+  var csv = rows.map(function(row) {
+    return row.map(function(cell) {
+      var s = cell === null || cell === undefined ? "" : String(cell);
+      // Escape: wrap in quotes if contains comma, quote, or newline
+      if (s.indexOf(",") !== -1 || s.indexOf('"') !== -1 || s.indexOf("\n") !== -1) {
+        s = '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }).join(",");
+  }).join("\n");
+
+  var blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
@@ -1134,92 +1187,100 @@ function exportToExcel() {
   var today = new Date(); today.setHours(0,0,0,0);
   var dateStr = new Date().toISOString().slice(0,10);
 
-  // Build one big HTML with all tables separated by page breaks
-  var html = "";
+  // Build one big CSV with section headers separated by blank lines
+  var rows = [];
 
-  // Section 1: Dashboard Summary
+  // Section: Summary
+  rows.push(["IMC HR Ops Dashboard — Export", dateStr]);
+  rows.push([]);
+  rows.push(["OVERALL SUMMARY"]);
   var totalDone = ids.reduce(function(s,id){ return s+doneCount(emps[id]); },0);
   var totalTasks = ids.reduce(function(s,id){ return s+allTasks(emps[id].type).length; },0);
-  var ovPct = totalTasks?Math.round(totalDone/totalTasks*100):0;
-  var sumRows = [["Total Employees",ids.length],["Tasks Completed",totalDone],["Tasks Remaining",totalTasks-totalDone],["Overall Progress",ovPct+"%"]];
-  html += '<h2 style="font-family:Arial;color:#1A1917">IMC HR Ops Dashboard &mdash; ' + dateStr + '</h2>';
-  html += makeTable(sumRows, ["Metric","Value"]) + "<br><br>";
-
-  var typeRows = TYPES.map(function(type){
+  rows.push(["Total Employees", ids.length]);
+  rows.push(["Tasks Completed", totalDone]);
+  rows.push(["Tasks Remaining", totalTasks-totalDone]);
+  rows.push(["Overall Progress", (totalTasks?Math.round(totalDone/totalTasks*100):0)+"%"]);
+  rows.push([]);
+  rows.push(["BY CHECKLIST TYPE"]);
+  rows.push(["Type","Employees","Done","Remaining","Progress %"]);
+  TYPES.forEach(function(type) {
     var tids=ids.filter(function(id){return emps[id].type===type;});
     var d=tids.reduce(function(s,id){return s+doneCount(emps[id]);},0);
     var tot=tids.reduce(function(s,id){return s+allTasks(type).length;},0);
-    return [type,tids.length,d,tot-d,(tot?Math.round(d/tot*100):0)+"%"];
+    rows.push([type,tids.length,d,tot-d,(tot?Math.round(d/tot*100):0)+"%"]);
   });
-  html += makeTable(typeRows, ["Checklist Type","Employees","Done","Remaining","Progress"]) + "<br><br>";
+  rows.push([]);
 
-  // Section 2: All Employees
-  html += '<div style="page-break-before:always"></div><h2 style="font-family:Arial">All Employees</h2>';
-  var empRows = ids.map(function(id){
+  // Section: All Employees
+  rows.push(["ALL EMPLOYEES"]);
+  rows.push(["Name","Role","Department","DOJ","Checklist Type","Done","Total","Progress","Status"]);
+  ids.forEach(function(id) {
     var e=emps[id]; var d=doneCount(e); var tot=allTasks(e.type).length; var p=tot?Math.round(d/tot*100):0;
-    return [e.name,e.role||"",e.dept||"",e.doj||"",e.type,d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"];
+    rows.push([e.name,e.role||"",e.dept||"",e.doj||"",e.type,d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"]);
   });
-  html += makeTable(empRows, ["Name","Role","Department","DOJ","Type","Done","Total","Progress","Status"]) + "<br><br>";
+  rows.push([]);
 
-  // Section 3: Needs Attention
+  // Section: Needs Attention
   var attn=ids.filter(function(id){
     var e=emps[id]; if(!e.doj) return false;
     var doj=new Date(e.doj); doj.setHours(0,0,0,0);
     return doj<=today && doneCount(e)<allTasks(e.type).length;
   });
   if (attn.length) {
-    html += '<div style="page-break-before:always"></div><h2 style="font-family:Arial;color:#DC2626">Needs Attention</h2>';
-    var attnRows=attn.map(function(id){
+    rows.push(["NEEDS ATTENTION — DOJ PASSED, TASKS INCOMPLETE"]);
+    rows.push(["Name","Role","DOJ","Days Overdue","Type","Tasks","Progress","Status"]);
+    attn.forEach(function(id) {
       var e=emps[id]; var doj=new Date(e.doj); doj.setHours(0,0,0,0);
       var over=Math.round((today-doj)/86400000);
       var d=doneCount(e); var tot=allTasks(e.type).length;
-      return [e.name,e.role||"",e.doj,over+" days",e.type,d+"/"+tot,Math.round(d/tot*100)+"%","OVERDUE"];
+      rows.push([e.name,e.role||"",e.doj,over+" days overdue",e.type,d+"/"+tot,Math.round(d/tot*100)+"%","OVERDUE"]);
     });
-    html += makeTable(attnRows, ["Name","Role","DOJ","Days Overdue","Type","Tasks","Progress","Status"]) + "<br><br>";
+    rows.push([]);
   }
 
-  // Section 4: Completed
+  // Section: Completed
   var comp=ids.filter(function(id){var tot=allTasks(emps[id].type).length;return doneCount(emps[id])===tot&&tot>0;});
   if (comp.length) {
-    html += '<div style="page-break-before:always"></div><h2 style="font-family:Arial;color:#1D9E75">Completed</h2>';
-    var compRows=comp.map(function(id){
+    rows.push(["COMPLETED EMPLOYEES"]);
+    rows.push(["Name","Role","Department","DOJ","Type","Tasks","Status"]);
+    comp.forEach(function(id) {
       var e=emps[id]; var tot=allTasks(e.type).length;
-      return [e.name,e.role||"",e.dept||"",e.doj||"",e.type,tot+"/"+tot,"Completed"];
+      rows.push([e.name,e.role||"",e.dept||"",e.doj||"",e.type,tot+"/"+tot,"Completed"]);
     });
-    html += makeTable(compRows, ["Name","Role","Department","DOJ","Type","Tasks","Status"]) + "<br><br>";
+    rows.push([]);
   }
 
-  // Per checklist type sections
-  TYPES.forEach(function(type){
+  // Per type breakdown
+  TYPES.forEach(function(type) {
     var tids=ids.filter(function(id){return emps[id].type===type;});
     if (!tids.length) return;
-    html += '<div style="page-break-before:always"></div><h2 style="font-family:Arial">'+esc(type)+'</h2>';
-    var rows=tids.map(function(id){
+    rows.push([type.toUpperCase()]);
+    rows.push(["Name","Role","Dept","DOJ","Done","Total","Progress","Status"]);
+    tids.forEach(function(id) {
       var e=emps[id]; var d=doneCount(e); var tot=allTasks(type).length; var p=tot?Math.round(d/tot*100):0;
-      return [e.name,e.role||"",e.dept||"",e.doj||"",d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"];
+      rows.push([e.name,e.role||"",e.dept||"",e.doj||"",d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"]);
     });
-    html += makeTable(rows, ["Name","Role","Dept","DOJ","Done","Total","Progress","Status"]) + "<br><br>";
+    rows.push([]);
   });
 
   // Per employee checklist
-  ids.forEach(function(id){
+  ids.forEach(function(id) {
     var e=emps[id]; var ch=e.checks||{}; var tm=e.taskMeta||{};
-    html += '<div style="page-break-before:always"></div>';
-    html += '<h2 style="font-family:Arial">'+esc(e.name)+' &mdash; '+esc(e.type)+'</h2>';
-    html += '<p style="font-family:Arial;font-size:12px">Role: '+esc(e.role||"—")+' | Dept: '+esc(e.dept||"—")+' | DOJ: '+esc(e.doj||"—")+'</p><br>';
-    var rows=[];
-    CHECKLISTS[e.type].forEach(function(phase){
-      phase.tasks.forEach(function(task){
+    rows.push([e.name.toUpperCase()+" — "+e.type]);
+    rows.push(["Role: "+(e.role||"—"),"Dept: "+(e.dept||"—"),"DOJ: "+(e.doj||"—")]);
+    rows.push(["#","Phase","Task","Assigned To","Timeline","Category","Deadline","Status"]);
+    CHECKLISTS[e.type].forEach(function(phase) {
+      phase.tasks.forEach(function(task) {
         var meta=tm[task.id]||{};
         rows.push([task.n,phase.phase,task.t,meta.assignee||task.own,task.tl,task.cat,meta.deadline||"",ch[task.id]?"Done":"Pending"]);
       });
     });
-    html += makeTable(rows, ["#","Phase","Task","Assigned To","Timeline","Category","Deadline","Status"]);
     var d=doneCount(e); var tot=allTasks(e.type).length;
-    html += '<p style="font-family:Arial;font-size:12px;margin-top:8px"><strong>Progress: '+d+'/'+tot+' tasks ('+( tot?Math.round(d/tot*100):0)+'%)</strong></p><br>';
+    rows.push(["","","","","","","Progress:",d+"/"+tot+" ("+(tot?Math.round(d/tot*100):0)+"%)"]);
+    rows.push([]);
   });
 
-  downloadXLS("IMC_HR_Dashboard_"+dateStr+".xls", "IMC HR Ops Dashboard", html);
+  downloadCSV("IMC_HR_Dashboard_"+dateStr+".csv", rows);
 }
 
 // ── EXPORT: Individual employee ───────────────────────────────────────────────
@@ -1227,37 +1288,47 @@ function exportEmployee(id) {
   var e = emps[id]; if (!e) return;
   var ch = e.checks||{}; var tm = e.taskMeta||{};
   var rows = [];
-  CHECKLISTS[e.type].forEach(function(phase){
-    phase.tasks.forEach(function(task){
-      var meta = tm[task.id]||{};
-      rows.push([task.n, phase.phase, task.t, meta.assignee||task.own, task.tl, task.cat, meta.deadline||"", ch[task.id]?"Done":"Pending"]);
+  rows.push([e.name+" — "+e.type]);
+  rows.push(["Role:"+(e.role||"—"),"Dept:"+(e.dept||"—"),"DOJ:"+(e.doj||"—")]);
+  rows.push([]);
+  rows.push(["#","Phase","Task","Assigned To","Timeline","Category","Deadline","Status"]);
+  CHECKLISTS[e.type].forEach(function(phase) {
+    phase.tasks.forEach(function(task) {
+      var meta=tm[task.id]||{};
+      rows.push([task.n,phase.phase,task.t,meta.assignee||task.own,task.tl,task.cat,meta.deadline||"",ch[task.id]?"Done":"Pending"]);
     });
   });
-  var d = doneCount(e); var tot = allTasks(e.type).length;
-  var title = e.name + " — " + e.type + " | Role: " + (e.role||"—") + " | DOJ: " + (e.doj||"—") + " | Progress: " + d + "/" + tot;
-  downloadXLS(e.name.replace(/\s+/g,"_")+"_Checklist.xls", title, makeTable(rows, ["#","Phase","Task","Assigned To","Timeline","Category","Deadline","Status"]));
+  var d=doneCount(e); var tot=allTasks(e.type).length;
+  rows.push([]);
+  rows.push(["Progress:",d+"/"+tot+" ("+(tot?Math.round(d/tot*100):0)+"%)","","","","","",d===tot?"Completed":"In Progress"]);
+  downloadCSV(e.name.replace(/\s+/g,"_")+"_Checklist.csv", rows);
 }
 
 // ── EXPORT: By checklist type ─────────────────────────────────────────────────
 function exportByType(type) {
   var ids = Object.keys(emps).filter(function(id){ return emps[id].type === type; });
-  if (!ids.length) { alert("No employees under " + type + "."); return; }
-  var rows = ids.map(function(id){
+  if (!ids.length) { alert("No employees under "+type+"."); return; }
+  var rows = [];
+  rows.push([type]);
+  rows.push(["Name","Role","Dept","DOJ","Done","Total","Progress","Status"]);
+  ids.forEach(function(id) {
     var e=emps[id]; var d=doneCount(e); var tot=allTasks(type).length; var p=tot?Math.round(d/tot*100):0;
-    return [e.name,e.role||"",e.dept||"",e.doj||"",d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"];
+    rows.push([e.name,e.role||"",e.dept||"",e.doj||"",d,tot,p+"%",p===100?"Completed":p>0?"In Progress":"Not Started"]);
   });
-  downloadXLS(type.replace(/\s+/g,"_")+".xls", type, makeTable(rows, ["Name","Role","Dept","DOJ","Done","Total","Progress","Status"]));
+  downloadCSV(type.replace(/\s+/g,"_")+".csv", rows);
 }
 
 // ── EXPORT: Checklist reference ───────────────────────────────────────────────
 function exportChecklist(type) {
   var rows = [];
-  CHECKLISTS[type].forEach(function(phase){
-    phase.tasks.forEach(function(task){
-      rows.push([task.n, phase.phase, task.t, task.own, task.tl, task.cat]);
+  rows.push([type+" — Full Checklist"]);
+  rows.push(["#","Phase","Task","Default Owner","Timeline","Category"]);
+  CHECKLISTS[type].forEach(function(phase) {
+    phase.tasks.forEach(function(task) {
+      rows.push([task.n,phase.phase,task.t,task.own,task.tl,task.cat]);
     });
   });
-  downloadXLS("Checklist_"+type.replace(/\s+/g,"_")+".xls", type+" — Full Checklist", makeTable(rows, ["#","Phase","Task","Default Owner","Timeline","Category"]));
+  downloadCSV("Checklist_"+type.replace(/\s+/g,"_")+".csv", rows);
 }
 
 
