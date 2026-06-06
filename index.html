@@ -130,6 +130,13 @@ nav{background:#fff;border-bottom:1px solid #E4E1DA;padding:0 24px;display:flex;
 .toast.ok{background:#E1F5EE;color:#065F46;border:1px solid #9FE1CB}
 .toast.err{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
 .emptystate{padding:32px;text-align:center;color:#9E9B94;font-size:13px}
+.task-comment{width:100%;padding:5px 8px;border:1px solid #E4E1DA;border-radius:6px;font-family:DM Sans,sans-serif;font-size:11px;color:#1A1917;resize:none;outline:none;margin-top:4px;line-height:1.4;transition:border-color .15s}
+.task-comment:focus{border-color:#D0CCC3}
+.task-comment::placeholder{color:#9E9B94}
+.add-comment-btn{font-size:10px;color:#9E9B94;background:none;border:none;cursor:pointer;padding:2px 0;margin-top:2px;font-family:DM Sans,sans-serif;text-decoration:underline}
+.add-comment-btn:hover{color:#6B6860}
+.comment-bubble{background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:5px 8px;font-size:11px;color:#92400E;margin-top:4px;line-height:1.4;display:flex;align-items:flex-start;gap:6px}
+.comment-bubble.info{background:#F0F9FF;border-color:#BAE6FD;color:#0C4A6E}
 .grplbl{font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.07em;padding:10px 10px 4px}
 .grpdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .task-meta{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
@@ -702,6 +709,17 @@ function showHome() {
 }
 
 // ── EMPLOYEE DETAIL ──────────────────────────────────────────────────────────
+function showCommentBox(btn, empId, taskId) {
+  var bubbleId = "cbubble_" + empId + "_" + taskId;
+  var bubble = document.getElementById(bubbleId);
+  if (bubble) {
+    bubble.style.display = "flex";
+    var ta = bubble.querySelector("textarea");
+    if (ta) { ta.focus(); }
+  }
+  btn.style.display = "none";
+}
+
 function infoField(label, value) {
   if (!value) return '';
   return '<div style="min-width:100px"><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">' + label + '</div>'
@@ -855,6 +873,8 @@ function showEmployee(id) {
         else { dlClass = 'ok'; dlTxt = dlDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
       }
       var ownAv = avColor(assignee);
+      var comment = (tm && tm[task.id] && tm[task.id].comment) ? tm[task.id].comment : '';
+      var showCommentBox = comment || dlClass === 'overdue' || dlClass === 'soon';
       html += '<div class="task' + (isDone ? ' done' : '') + '" data-empid="' + id + '" data-taskid="' + task.id + '">'
         + '<div class="tcb"><svg class="cksvg" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1"/></svg></div>'
         + '<div style="flex:1;min-width:0">'
@@ -870,6 +890,13 @@ function showEmployee(id) {
         + (deadline ? dlTxt : '<input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="' + deadline + '" title="Set deadline" />')
         + (deadline ? ' <input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="' + deadline + '" title="Change deadline" style="width:0;opacity:0;position:absolute" />' : '')
         + '</span>'
+        + '</div>'
+        + (showCommentBox
+            ? '<div class="' + (dlClass==='overdue'?'comment-bubble':'comment-bubble info') + '" id="cbubble_' + id + '_' + task.id + '" style="' + (comment?'':'display:none') + '" onclick="event.stopPropagation()">'
+              + '&#128172; <textarea class="task-comment" rows="2" data-empid="' + id + '" data-taskid="' + task.id + '" placeholder="Add a comment or note..." onclick="event.stopPropagation()">' + comment + '</textarea>'
+              + '</div>'
+              + (!comment ? '<button class="add-comment-btn" data-empid="' + id + '" data-taskid="' + task.id + '">+ add comment</button>' : '')
+            : '<button class="add-comment-btn" data-empid="' + id + '" data-taskid="' + task.id + '">+ add comment</button>')
         + '</div></div></div>';
     }
     html += '</div>';
@@ -887,9 +914,33 @@ function showEmployee(id) {
   var taskEls = document.querySelectorAll(".task[data-empid]");
   for (var te = 0; te < taskEls.length; te++) {
     taskEls[te].addEventListener("click", function(ev){
-      if (ev.target.classList.contains("assign-input") || ev.target.classList.contains("dl-picker")) return;
+      if (ev.target.classList.contains("assign-input") || ev.target.classList.contains("dl-picker") || ev.target.classList.contains("task-comment") || ev.target.classList.contains("add-comment-btn")) return;
       toggleTask(this.getAttribute("data-empid"), this.getAttribute("data-taskid"));
     });
+  }
+  // Wire add-comment buttons
+  var addCommentBtns = document.querySelectorAll(".add-comment-btn");
+  for (var ab = 0; ab < addCommentBtns.length; ab++) {
+    addCommentBtns[ab].addEventListener("click", function(ev){
+      ev.stopPropagation();
+      var eid = this.getAttribute("data-empid");
+      var tid = this.getAttribute("data-taskid");
+      showCommentBox(this, eid, tid);
+    });
+  }
+  // Wire comment textareas
+  var commentEls = document.querySelectorAll(".task-comment");
+  for (var ce = 0; ce < commentEls.length; ce++) {
+    commentEls[ce].addEventListener("change", function(ev){
+      ev.stopPropagation();
+      var eid = this.getAttribute("data-empid");
+      var tid = this.getAttribute("data-taskid");
+      if (!emps[eid].taskMeta) emps[eid].taskMeta = {};
+      if (!emps[eid].taskMeta[tid]) emps[eid].taskMeta[tid] = {};
+      emps[eid].taskMeta[tid].comment = this.value.trim();
+      saveData();
+    });
+    commentEls[ce].addEventListener("click", function(ev){ ev.stopPropagation(); });
   }
   // Wire deadline pickers
   var dlPickers = document.querySelectorAll(".dl-picker");
