@@ -943,34 +943,34 @@ function renderAddForm(type) {
 
   if (type === "Local Onboarding") {
     fields = badge
-      + fld("mName", "Full name *", "text", "e.g. Priya Sharma")
-      + fld("mRole", "Position / designation *", "text", "e.g. Analyst")
-      + fld("mDept", "Department", "text", "e.g. Finance")
-      + fld("mDOJ", "Date of joining *", "date", "");
+      + fld("mName", "Full name *", "text", "e.g. Priya Sharma", true)
+      + fld("mRole", "Position / designation *", "text", "e.g. Analyst", true)
+      + fld("mDept", "Department *", "text", "e.g. Finance", true)
+      + fld("mDOJ", "Date of joining *", "date", "", true);
 
   } else if (type === "International Incoming") {
     fields = badge
-      + fld("mName", "Full name *", "text", "e.g. Lukas Bauer")
-      + fld("mRole", "Position / designation *", "text", "e.g. Senior Trader")
-      + fld("mManager", "Manager", "text", "e.g. Jan de Vries")
-      + fld("mTeam", "Team", "text", "e.g. Equity Derivatives")
-      + fld("mDOJ", "Transfer date *", "date", "");
+      + fld("mName", "Full name *", "text", "e.g. Lukas Bauer", true)
+      + fld("mRole", "Position / designation *", "text", "e.g. Senior Trader", true)
+      + fld("mManager", "Manager *", "text", "e.g. Jan de Vries", true)
+      + fld("mTeam", "Team *", "text", "e.g. Equity Derivatives", true)
+      + fld("mDOJ", "Transfer date *", "date", "", true);
 
   } else if (type === "Local Offboarding") {
     fields = badge
-      + fld("mName", "Full name *", "text", "e.g. Varun Dumbre")
-      + fld("mLWD", "Last working day *", "date", "")
-      + fld("mTermDate", "Termination date", "date", "")
+      + fld("mName", "Full name *", "text", "e.g. Varun Dumbre", true)
+      + fld("mLWD", "Last working day *", "date", "", true)
+      + fld("mTermDate", "Termination date *", "date", "", true)
       + toggle("mGardenLeave", "Garden leave?", "mGardenLeaveRange", "Date range")
       + toggle("mNonCompete", "Non-compete?", "mNonCompeteRange", "Date range");
 
   } else if (type === "International Outgoing") {
     fields = badge
-      + fld("mName", "Full name *", "text", "e.g. Priya Sharma")
-      + fld("mNextRole", "Next position", "text", "e.g. Head of Trading")
-      + fld("mNextManager", "Next manager", "text", "e.g. Sarah Klein")
-      + fld("mNextTeam", "Next team", "text", "e.g. Amsterdam Desk")
-      + fld("mDOJ", "Transfer date *", "date", "");
+      + fld("mName", "Full name *", "text", "e.g. Priya Sharma", true)
+      + fld("mNextRole", "Next position *", "text", "e.g. Head of Trading", true)
+      + fld("mNextManager", "Next manager *", "text", "e.g. Sarah Klein", true)
+      + fld("mNextTeam", "Next team *", "text", "e.g. Amsterdam Desk", true)
+      + fld("mDOJ", "Transfer date *", "date", "", true);
   }
 
   container.innerHTML = fields;
@@ -986,9 +986,10 @@ function renderAddForm(type) {
   });
 }
 
-function fld(id, label, type, placeholder) {
-  return '<div class="fld"><label>' + label + '</label>'
-    + '<input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '"/></div>';
+function fld(id, label, type, placeholder, required) {
+  return '<div class="fld"><label>' + label + (required ? '' : '') + '</label>'
+    + '<input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '"'
+    + (required ? ' data-required="true"' : '') + '/></div>';
 }
 
 function toggle(checkId, checkLabel, rangeId, rangeLabel) {
@@ -1005,6 +1006,25 @@ function toggle(checkId, checkLabel, rangeId, rangeLabel) {
 function addEmp() {
   var type = document.getElementById("mTypeSelect").value;
   if (!type) { alert("Please select a checklist type."); return; }
+
+  // Validate all required fields
+  var reqFields = document.querySelectorAll("[data-required='true']");
+  var missing = [];
+  for (var ri = 0; ri < reqFields.length; ri++) {
+    var rf = reqFields[ri];
+    rf.style.borderColor = "";
+    if (!rf.value.trim()) {
+      rf.style.borderColor = "#DC2626";
+      rf.style.outline = "none";
+      var lbl = rf.parentElement ? rf.parentElement.querySelector("label") : null;
+      missing.push(lbl ? lbl.textContent.replace("*","").trim() : rf.id);
+    }
+  }
+  if (missing.length > 0) {
+    alert("Please fill in required fields:\n• " + missing.join("\n• "));
+    return;
+  }
+
   var nameEl = document.getElementById("mName");
   var name = nameEl ? nameEl.value.trim() : "";
   if (!name) { alert("Please enter a name."); return; }
