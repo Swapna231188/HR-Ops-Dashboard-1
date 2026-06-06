@@ -678,6 +678,37 @@ function showHome() {
 }
 
 // ── EMPLOYEE DETAIL ──────────────────────────────────────────────────────────
+function infoField(label, value) {
+  if (!value) return '';
+  return '<div style="min-width:100px"><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">' + label + '</div>'
+    + '<div style="font-size:13px;color:#1A1917;font-weight:500">' + value + '</div></div>';
+}
+function buildEmpInfo(e) {
+  var fields = '';
+  if (e.type === 'Local Onboarding') {
+    fields += infoField('Position', e.role);
+    fields += infoField('Department', e.dept);
+    fields += infoField('Date of joining', e.doj);
+  } else if (e.type === 'International Incoming') {
+    fields += infoField('Position', e.role);
+    fields += infoField('Manager', e.manager);
+    fields += infoField('Team', e.team);
+    fields += infoField('Transfer date', e.doj);
+  } else if (e.type === 'Local Offboarding') {
+    fields += infoField('Last working day', e.lwd || e.doj);
+    fields += infoField('Termination date', e.termDate);
+    fields += infoField('Garden leave', e.gardenLeave);
+    fields += infoField('Non-compete', e.nonCompete);
+  } else if (e.type === 'International Outgoing') {
+    fields += infoField('Next position', e.role);
+    fields += infoField('Next manager', e.nextManager);
+    fields += infoField('Next team', e.team);
+    fields += infoField('Transfer date', e.doj);
+  }
+  fields += infoField('Type', e.type);
+  return fields;
+}
+
 function showEmployee(id) {
   var e = emps[id];
   if (!e) { showHome(); return; }
@@ -701,11 +732,8 @@ function showEmployee(id) {
     + '<div class="ehrow">'
     + '<div class="avlg" style="background:' + a.bg + ';color:' + a.c + '">' + initials(e.name) + '</div>'
     + '<div><div class="ehname">' + e.name + '</div>'
-    + '<div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:8px">'
-    + '<div><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Position</div><div style="font-size:13px;color:#1A1917;font-weight:500">' + (e.role || '—') + '</div></div>'
-    + '<div><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Department</div><div style="font-size:13px;color:#1A1917;font-weight:500">' + (e.dept || '—') + '</div></div>'
-    + '<div><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Date of joining</div><div style="font-size:13px;color:#1A1917;font-weight:500">' + (e.doj || '—') + '</div></div>'
-    + '<div><div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Checklist type</div><div style="font-size:13px;color:#1A1917;font-weight:500">' + e.type + '</div></div>'
+    + '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">'
+    + buildEmpInfo(e)
     + '</div></div>'
     + '<div class="ehacts">'
     + '<button class="hbtn back" id="backBtn">&larr; Back to dashboard</button>'
@@ -883,41 +911,128 @@ function closeModal() {
 }
 
 function showAddModal() {
+  // Step 1: pick checklist type first, then show relevant form
   openModal(
     '<div class="modtitle">Add new employee</div>'
-    + '<div class="fld"><label>Full name *</label><input id="mName" placeholder="e.g. Priya Sharma"/></div>'
-    + '<div class="fld"><label>Role / designation</label><input id="mRole" placeholder="e.g. Analyst"/></div>'
-    + '<div class="fld"><label>Department</label><input id="mDept" placeholder="e.g. Finance"/></div>'
-    + '<div class="fld"><label>Date of joining</label><input id="mDOJ" type="date"/></div>'
-    + '<div class="fld"><label>Checklist type</label><select id="mType">'
-    + '<option>Local Onboarding</option>'
-    + '<option>International Incoming</option>'
-    + '<option>Local Offboarding</option>'
-    + '<option>International Outgoing</option>'
+    + '<div class="fld"><label>Checklist type *</label>'
+    + '<select id="mTypeSelect" onchange="renderAddForm(this.value)">'
+    + '<option value="">— Select type —</option>'
+    + '<option value="Local Onboarding">Local Onboarding</option>'
+    + '<option value="International Incoming">International Incoming</option>'
+    + '<option value="Local Offboarding">Local Offboarding</option>'
+    + '<option value="International Outgoing">International Outgoing</option>'
     + '</select></div>'
-    + '<div class="mbtns">'
-    + '<button class="mbtn" id="mCancel">Cancel</button>'
-    + '<button class="mbtn pri" id="mConfirm">+ Add employee</button>'
-    + '</div>'
+    + '<div id="addFormFields"></div>'
+    + '<div class="mbtns"><button class="mbtn" id="mCancel">Cancel</button>'
+    + '<button class="mbtn pri" id="mConfirm" style="display:none" onclick="addEmp()">+ Add employee</button></div>'
   );
   document.getElementById("mCancel").addEventListener("click", closeModal);
-  document.getElementById("mConfirm").addEventListener("click", function(){
-    var name = document.getElementById("mName").value.trim();
-    if (!name) { alert("Please enter a name."); return; }
-    var id = genId();
-    emps[id] = {
-      name: name,
-      role: document.getElementById("mRole").value.trim(),
-      dept: document.getElementById("mDept").value.trim(),
-      doj: document.getElementById("mDOJ").value,
-      type: document.getElementById("mType").value,
-      checks: {}
-    };
-    saveData();
-    closeModal();
-    showToast(name + " added successfully.", "ok");
-    showEmployee(id);
+}
+
+function renderAddForm(type) {
+  var container = document.getElementById("addFormFields");
+  var btn = document.getElementById("mConfirm");
+  if (!type) { container.innerHTML = ""; btn.style.display = "none"; return; }
+  btn.style.display = "";
+
+  var col = TYPE_COLORS[type] || {bg:"#F0EEE9",c:"#1A1917",dot:"#6B6860"};
+  var badge = '<div style="display:flex;align-items:center;gap:6px;padding:8px 11px;background:'+col.bg+';border-radius:8px;margin-bottom:12px;font-size:12px;font-weight:500;color:'+col.c+'">'
+    + '<div style="width:7px;height:7px;border-radius:50%;background:'+col.dot+'"></div>' + type + '</div>';
+
+  var fields = "";
+
+  if (type === "Local Onboarding") {
+    fields = badge
+      + fld("mName", "Full name *", "text", "e.g. Priya Sharma")
+      + fld("mRole", "Position / designation *", "text", "e.g. Analyst")
+      + fld("mDept", "Department", "text", "e.g. Finance")
+      + fld("mDOJ", "Date of joining *", "date", "");
+
+  } else if (type === "International Incoming") {
+    fields = badge
+      + fld("mName", "Full name *", "text", "e.g. Lukas Bauer")
+      + fld("mRole", "Position / designation *", "text", "e.g. Senior Trader")
+      + fld("mManager", "Manager", "text", "e.g. Jan de Vries")
+      + fld("mTeam", "Team", "text", "e.g. Equity Derivatives")
+      + fld("mDOJ", "Transfer date *", "date", "");
+
+  } else if (type === "Local Offboarding") {
+    fields = badge
+      + fld("mName", "Full name *", "text", "e.g. Varun Dumbre")
+      + fld("mLWD", "Last working day *", "date", "")
+      + fld("mTermDate", "Termination date", "date", "")
+      + toggle("mGardenLeave", "Garden leave?", "mGardenLeaveRange", "Date range")
+      + toggle("mNonCompete", "Non-compete?", "mNonCompeteRange", "Date range");
+
+  } else if (type === "International Outgoing") {
+    fields = badge
+      + fld("mName", "Full name *", "text", "e.g. Priya Sharma")
+      + fld("mNextRole", "Next position", "text", "e.g. Head of Trading")
+      + fld("mNextManager", "Next manager", "text", "e.g. Sarah Klein")
+      + fld("mNextTeam", "Next team", "text", "e.g. Amsterdam Desk")
+      + fld("mDOJ", "Transfer date *", "date", "");
+  }
+
+  container.innerHTML = fields;
+
+  // Wire garden leave / non-compete toggles
+  ["mGardenLeave","mNonCompete"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("change", function() {
+      var rangeId = id + "Range";
+      var rangeEl = document.getElementById(rangeId + "Wrap");
+      if (rangeEl) rangeEl.style.display = this.checked ? "block" : "none";
+    });
   });
+}
+
+function fld(id, label, type, placeholder) {
+  return '<div class="fld"><label>' + label + '</label>'
+    + '<input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '"/></div>';
+}
+
+function toggle(checkId, checkLabel, rangeId, rangeLabel) {
+  return '<div class="fld" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+    + '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#1A1917;cursor:pointer;min-width:160px">'
+    + '<input type="checkbox" id="' + checkId + '" style="width:15px;height:15px;cursor:pointer"/> ' + checkLabel + '</label>'
+    + '<div id="' + rangeId + 'Wrap" style="display:none;flex:1">'
+    + '<input id="' + rangeId + '" type="text" placeholder="e.g. 01 Jun – 30 Aug 2026" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/>'
+    + '</div></div>';
+}
+
+
+
+function addEmp() {
+  var type = document.getElementById("mTypeSelect").value;
+  if (!type) { alert("Please select a checklist type."); return; }
+  var nameEl = document.getElementById("mName");
+  var name = nameEl ? nameEl.value.trim() : "";
+  if (!name) { alert("Please enter a name."); return; }
+  var id = genId();
+  var e = { name: name, type: type, checks: {}, taskMeta: {} };
+  if (type === "Local Onboarding") {
+    e.role = val("mRole"); e.dept = val("mDept"); e.doj = val("mDOJ");
+  } else if (type === "International Incoming") {
+    e.role = val("mRole"); e.manager = val("mManager"); e.team = val("mTeam"); e.doj = val("mDOJ"); e.dept = e.team;
+  } else if (type === "Local Offboarding") {
+    e.lwd = val("mLWD"); e.doj = e.lwd; e.termDate = val("mTermDate");
+    var glEl = document.getElementById("mGardenLeave");
+    var ncEl = document.getElementById("mNonCompete");
+    e.gardenLeave = (glEl && glEl.checked) ? (val("mGardenLeaveRange") || "Yes") : "No";
+    e.nonCompete  = (ncEl && ncEl.checked) ? (val("mNonCompeteRange")  || "Yes") : "No";
+  } else if (type === "International Outgoing") {
+    e.role = val("mNextRole"); e.nextManager = val("mNextManager"); e.team = val("mNextTeam"); e.dept = e.team; e.doj = val("mDOJ");
+  }
+  emps[id] = e;
+  saveData();
+  closeModal();
+  showToast(name + " added successfully.", "ok");
+  showEmployee(id);
+}
+
+function val(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : "";
 }
 
 function showEditModal(id) {
