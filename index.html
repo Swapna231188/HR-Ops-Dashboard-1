@@ -1013,7 +1013,10 @@ function renderAddForm(type) {
       + fld("mNextManager","Next manager *","text","e.g. Sarah Klein",true)
       + fld("mNextTeam","Next team *","text","e.g. Amsterdam Desk",true)
       + fld("mDOJ","Transfer date *","date","",true)
-      + radioField("mTransferType","Transfer type *",["Return to Home Country","Transfer to Other Region"],true);
+      + radioFieldWithText("mTransferType","Transfer type *",[
+          {value:"Return to Home Country", textId:"mTransferRegion1", placeholder:"e.g. Netherlands"},
+          {value:"Transfer to Other Region", textId:"mTransferRegion2", placeholder:"e.g. Singapore"}
+        ],true);
 
   } else if (type === "Local Transfer Out") {
     fields = badge
@@ -1047,15 +1050,29 @@ function renderAddForm(type) {
     if (toEl)   toEl.addEventListener("change",   function(){ calcDays(rangeId); });
   });
 
-  // Wire transfer type radio for temporary end date
+  // Wire transfer type radio for temporary end date + region text fields
   var radios = document.querySelectorAll("input[name='mTransferType']");
   for (var ri = 0; ri < radios.length; ri++) {
     radios[ri].addEventListener("change", function() {
+      // Hide all region text wraps first
+      var allWraps = ["mTransferRegion1Wrap","mTransferRegion2Wrap"];
+      allWraps.forEach(function(wid) {
+        var w = document.getElementById(wid);
+        if (w) w.style.display = "none";
+      });
+
+      // Show region text for IO transfer types
+      var textId = this.getAttribute("data-textid");
+      if (textId) {
+        var textWrap = document.getElementById(textId + "Wrap");
+        if (textWrap) textWrap.style.display = "block";
+      }
+
+      // Show temp end date for temporary transfers
       var wrap = document.getElementById("mTempEndWrap");
       if (!wrap) return;
       var isTemp = this.value === "Temporary Transfer" || this.value === "Temporary";
       wrap.style.display = isTemp ? "block" : "none";
-      // Wire end date calc
       if (isTemp) {
         var startDate = document.getElementById("mDOJ") ? document.getElementById("mDOJ").value : "";
         var endEl = document.getElementById("mTempEnd");
@@ -1074,6 +1091,23 @@ function radioField(id, label, options, required) {
     html += '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#1A1917;cursor:pointer;padding:7px 11px;border:1px solid #E4E1DA;border-radius:8px">'
       + '<input type="radio" name="' + id + '" value="' + opt + '" style="cursor:pointer"/> ' + opt + '</label>';
       + '<input type="radio" name="' + id + '" value="' + opt + '" style="cursor:pointer"/> ' + opt + '</label>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function radioFieldWithText(id, label, options, required) {
+  var html = '<div class="fld"><label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:6px">' + label + '</label>';
+  html += '<div style="display:flex;flex-direction:column;gap:8px">';
+  options.forEach(function(opt) {
+    html += '<div>'
+      + '<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#1A1917;cursor:pointer;padding:7px 11px;border:1px solid #E4E1DA;border-radius:8px">'
+      + '<input type="radio" name="' + id + '" value="' + opt.value + '" data-textid="' + opt.textId + '" style="cursor:pointer"/> ' + opt.value
+      + '</label>'
+      + '<div id="' + opt.textId + 'Wrap" style="display:none;margin-top:4px;padding-left:12px">'
+      + '<input id="' + opt.textId + '" type="text" placeholder="' + opt.placeholder + '" style="width:100%;padding:7px 10px;border:1px solid #E4E1DA;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px"/>'
+      + '<div style="font-size:11px;color:#9E9B94;margin-top:3px">Enter the region or country</div>'
+      + '</div></div>';
   });
   html += '</div></div>';
   return html;
@@ -1232,6 +1266,14 @@ function addEmp() {
     e.role = val("mNextRole"); e.nextManager = val("mNextManager");
     e.team = val("mNextTeam"); e.dept = e.team; e.doj = val("mDOJ");
     e.transferType = transferType;
+    // Capture region text based on which option was selected
+    if (transferType === "Return to Home Country") {
+      var region1 = val("mTransferRegion1");
+      if (region1) e.transferType = "Return to Home Country — " + region1;
+    } else if (transferType === "Transfer to Other Region") {
+      var region2 = val("mTransferRegion2");
+      if (region2) e.transferType = "Transfer to Other Region — " + region2;
+    }
 
   } else if (type === "Local Transfer Out") {
     e.doj = val("mDOJ"); e.role = val("mNextRole");
