@@ -593,8 +593,8 @@ function showHome() {
     + '<div class="hsub">India Operations &middot; IMC &middot; All employees at a glance</div>'
     + '<div class="statgrid">'
     + '<div class="statcard"><div class="statlbl">Total employees</div><div class="statval">' + totalEmps + '</div></div>'
-    + '<div class="statcard"><div class="statlbl">Tasks completed</div><div class="statval g">' + totalDone + '</div></div>'
-    + '<div class="statcard"><div class="statlbl">Tasks remaining</div><div class="statval">' + totalRem + '</div></div>'
+    + '<div class="statcard met clickable" id="dashCompleted" title="Click to see completed tasks"><div class="statlbl">Tasks completed &#9656;</div><div class="statval g">' + totalDone + '</div></div>'
+    + '<div class="statcard met clickable" id="dashRemaining" title="Click to see remaining tasks"><div class="statlbl">Tasks remaining &#9656;</div><div class="statval">' + totalRem + '</div></div>'
     + '<div class="statcard"><div class="statlbl">Overall progress</div><div class="statval g">' + ovPct + '%</div>'
     + '<div class="statpbar"><div class="statpfill" style="width:' + ovPct + '%"></div></div></div>'
     + '</div>';
@@ -724,6 +724,11 @@ function showHome() {
   // wire home export button
   var homeExpBtn = document.getElementById("homeExportBtn");
   if (homeExpBtn) homeExpBtn.addEventListener("click", function(){ exportToExcel(); });
+  // wire dashboard stat cards
+  var dc = document.getElementById("dashCompleted");
+  if (dc) dc.addEventListener("click", function(){ showDashCompletedPanel(); });
+  var dr = document.getElementById("dashRemaining");
+  if (dr) dr.addEventListener("click", function(){ showDashRemainingPanel(); });
 
   // wire all table row clicks
   var rows = document.querySelectorAll(".etable tbody tr[data-id]");
@@ -752,6 +757,206 @@ function showCommentBox(btn, empId, taskId) {
   var btnEl = document.getElementById("cbtn_" + empId + "_" + taskId);
   if (btnEl) btnEl.style.display = "none";
 }
+
+function showDashCompletedPanel() {
+  closeQuickPanel();
+  var ids = Object.keys(emps);
+  var overlay = document.createElement("div");
+  overlay.className = "qp-overlay"; overlay.id = "qpOverlay";
+  overlay.addEventListener("click", closeQuickPanel);
+  document.body.appendChild(overlay);
+
+  var panel = document.createElement("div");
+  panel.className = "quickpanel"; panel.id = "quickPanel";
+  panel.style.cssText = "position:fixed;top:0;right:0;width:420px;height:100vh;background:#fff;border-left:1px solid #E4E1DA;z-index:250;display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.12)";
+
+  var totalDone = ids.reduce(function(s,id){ return s + doneCount(emps[id]); }, 0);
+  var bodyHtml = '';
+
+  ids.forEach(function(id) {
+    var e = emps[id]; var ch = e.checks||{};
+    var a = avColor(id); var col = TYPE_COLORS[e.type]||{bg:"#F0EEE9",c:"#6B6860",dot:"#9E9B94"};
+    var doneTasks = [];
+    CHECKLISTS[e.type].forEach(function(phase) {
+      phase.tasks.forEach(function(task) {
+        if (ch[task.id]) doneTasks.push({task:task, phase:phase.phase});
+      });
+    });
+    if (!doneTasks.length) return;
+
+    var empPct = pct(e);
+    var byPhase = {};
+    doneTasks.forEach(function(item) {
+      if (!byPhase[item.phase]) byPhase[item.phase] = [];
+      byPhase[item.phase].push(item);
+    });
+
+    var tasksHtml = '';
+    Object.keys(byPhase).forEach(function(phase) {
+      tasksHtml += '<div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px 4px">' + phase + ' (' + byPhase[phase].length + ')</div>';
+      byPhase[phase].forEach(function(item) {
+        tasksHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:8px;background:#F7F6F3;margin-bottom:3px">'
+          + '<div style="width:14px;height:14px;border-radius:3px;background:#1D9E75;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">'
+          + '<svg width="8" height="7" viewBox="0 0 10 8" fill="none"><polyline points="1,4 3.5,7 9,1" stroke="white" stroke-width="2.5"/></svg></div>'
+          + '<div style="font-size:12px;color:#9E9B94;text-decoration:line-through;line-height:1.4">' + item.task.t + '</div>'
+          + '</div>';
+      });
+    });
+
+    bodyHtml += '<div style="margin-bottom:8px;border:1px solid #9FE1CB;border-radius:10px;overflow:hidden">'
+      + '<div class="qp-emp-toggle" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#E1F5EE;cursor:pointer">'
+      + '<div style="width:26px;height:26px;border-radius:50%;background:' + a.bg + ';color:' + a.c + ';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">' + initials(e.name) + '</div>'
+      + '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#065F46">' + e.name + '</div>'
+      + '<div style="font-size:10px;color:#065F46;opacity:.7">' + (e.role||e.type) + ' &middot; ' + doneTasks.length + ' completed</div></div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<div style="font-size:12px;font-weight:600;color:#065F46">' + empPct + '%</div>'
+      + '<div class="qp-chevron" style="font-size:11px;color:#065F46;transition:transform .2s">&#9660;</div>'
+      + '</div></div>'
+      + '<div class="qp-task-body" style="display:none;padding:8px 10px;background:#fff">' + tasksHtml + '</div>'
+      + '</div>';
+  });
+
+  if (!bodyHtml) bodyHtml = '<div style="text-align:center;padding:30px;color:#9E9B94;font-size:13px">No tasks completed yet.</div>';
+
+  panel.innerHTML = '<div style="padding:16px 18px;border-bottom:1px solid #E4E1DA;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    + '<div><div style="font-size:14px;font-weight:600">Completed tasks</div>'
+    + '<div style="font-size:11px;color:#9E9B94;margin-top:2px">' + totalDone + ' tasks &middot; click employee to expand</div></div>'
+    + '<button id="qpCloseBtn" style="background:none;border:none;font-size:18px;cursor:pointer;color:#9E9B94;padding:0;line-height:1">&#10005;</button>'
+    + '</div>'
+    + '<div style="flex:1;overflow-y:auto;padding:12px">' + bodyHtml + '</div>';
+
+  document.body.appendChild(panel);
+
+  var cb = panel.querySelector ? panel.querySelector("#qpCloseBtn") : null;
+  if (cb) cb.addEventListener("click", closeQuickPanel);
+
+  var toggles = panel.querySelectorAll ? panel.querySelectorAll(".qp-emp-toggle") : [];
+  for (var ti = 0; ti < toggles.length; ti++) {
+    toggles[ti].addEventListener("click", function() {
+      var taskBody = this.nextElementSibling;
+      var chevron = this.querySelector(".qp-chevron");
+      if (taskBody) {
+        var isOpen = taskBody.style.display !== "none";
+        taskBody.style.display = isOpen ? "none" : "block";
+        if (chevron) chevron.style.transform = isOpen ? "" : "rotate(180deg)";
+      }
+    });
+  }
+}
+
+function showDashRemainingPanel() {
+  closeQuickPanel();
+  var ids = Object.keys(emps);
+  var overlay = document.createElement("div");
+  overlay.className = "qp-overlay"; overlay.id = "qpOverlay";
+  overlay.addEventListener("click", closeQuickPanel);
+  document.body.appendChild(overlay);
+
+  var panel = document.createElement("div");
+  panel.className = "quickpanel"; panel.id = "quickPanel";
+  panel.style.cssText = "position:fixed;top:0;right:0;width:420px;height:100vh;background:#fff;border-left:1px solid #E4E1DA;z-index:250;display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.12)";
+
+  var totalRem = ids.reduce(function(s,id){ return s+(allTasks(emps[id].type).length-doneCount(emps[id])); },0);
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  var bodyHtml = '';
+  ids.forEach(function(id) {
+    var e = emps[id]; var ch = e.checks||{};
+    var a = avColor(id); var col = TYPE_COLORS[e.type]||{bg:"#F0EEE9",c:"#6B6860",dot:"#9E9B94"};
+    var pending = [];
+    CHECKLISTS[e.type].forEach(function(phase) {
+      phase.tasks.forEach(function(task) {
+        if (ch[task.id]) return;
+        var tm = (e.taskMeta&&e.taskMeta[task.id])||{};
+        var dl = tm.deadline||'';
+        if (!dl && task.dlOffset!==null && task.dlOffset!==undefined && e.doj) {
+          var doj=new Date(e.doj); doj.setDate(doj.getDate()+task.dlOffset); dl=doj.toISOString().slice(0,10);
+        }
+        var dlCss='',dlTxt='';
+        if (dl) {
+          var diff=Math.round((new Date(dl)-today)/86400000);
+          if (diff<0){dlCss='background:#FEF2F2;color:#DC2626';dlTxt='Overdue '+Math.abs(diff)+'d';}
+          else if(diff<=3){dlCss='background:#FFFBEB;color:#92400E';dlTxt='Due in '+diff+'d';}
+          else{dlCss='background:#E1F5EE;color:#065F46';dlTxt=new Date(dl).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+        }
+        pending.push({task:task,phase:phase.phase,dlCss:dlCss,dlTxt:dlTxt,assignee:tm.assignee||task.own,comment:tm.comment||''});
+      });
+    });
+    if (!pending.length) return;
+    var empPct = pct(e);
+    // Build tasks HTML grouped by phase
+    var byPhase={};
+    pending.forEach(function(item){ if(!byPhase[item.phase])byPhase[item.phase]=[];byPhase[item.phase].push(item); });
+    var tasksHtml='';
+    Object.keys(byPhase).forEach(function(phase){
+      tasksHtml+='<div style="font-size:10px;font-weight:700;color:#9E9B94;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px 4px">'+phase+' ('+byPhase[phase].length+')</div>';
+      byPhase[phase].forEach(function(item){
+        tasksHtml+='<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:8px;background:#F7F6F3;margin-bottom:3px">'
+          +'<div style="width:14px;height:14px;border-radius:3px;border:1.5px solid #D0CCC3;flex-shrink:0;margin-top:2px"></div>'
+          +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:#1A1917;line-height:1.4">'+item.task.t+'</div>'
+          +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px">'
+          +'<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:#EFF6FF;color:#2563EB">'+item.assignee+'</span>'
+          +(item.dlTxt?'<span style="font-size:10px;padding:1px 6px;border-radius:10px;'+item.dlCss+'">'+item.dlTxt+'</span>':'')
+          +(item.comment?'<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:#FDF4FF;color:#7C3AED">&#128172; '+item.comment+'</span>':'')
+          +'</div></div></div>';
+      });
+    });
+    bodyHtml+='<div style="margin-bottom:8px;border:1px solid #E4E1DA;border-radius:10px;overflow:hidden">'
+      +'<div class="qp-emp-toggle" data-id="'+id+'" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:'+col.bg+';cursor:pointer">'
+      +'<div style="width:26px;height:26px;border-radius:50%;background:'+a.bg+';color:'+a.c+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">'+initials(e.name)+'</div>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:600;color:'+col.c+'">'+e.name+'</div>'
+      +'<div style="font-size:10px;color:'+col.c+';opacity:.7">'+(e.role||e.type)+' &middot; '+pending.length+' remaining</div></div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<div style="font-size:12px;font-weight:600;color:'+col.c+'">'+empPct+'%</div>'
+      +'<div class="qp-chevron" style="font-size:11px;color:'+col.c+';transition:transform .2s">&#9660;</div>'
+      +'</div></div>'
+      +'<div class="qp-task-body" style="display:none;padding:8px 10px;background:#fff">'+tasksHtml
+      +'<div style="padding-top:6px;border-top:1px solid #F0EEE9;margin-top:4px">'
+      +'<button class="qp-goto-emp" data-id="'+id+'" style="font-size:11px;color:#2563EB;background:none;border:none;cursor:pointer;font-family:DM Sans,sans-serif;padding:0">Open full checklist &#8594;</button>'
+      +'</div></div>'
+      +'</div>';
+  });
+
+  if (!bodyHtml) bodyHtml='<div style="text-align:center;padding:30px;color:#1D9E75;font-size:13px">&#10003; All tasks completed!</div>';
+
+  panel.innerHTML='<div style="padding:16px 18px;border-bottom:1px solid #E4E1DA;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">'
+    +'<div><div style="font-size:14px;font-weight:600">Remaining tasks</div>'
+    +'<div style="font-size:11px;color:#9E9B94;margin-top:2px">'+totalRem+' tasks &middot; '+ids.length+' employees &middot; click to expand</div></div>'
+    +'<button id="qpCloseBtn" style="background:none;border:none;font-size:18px;cursor:pointer;color:#9E9B94;padding:0;line-height:1">&#10005;</button>'
+    +'</div>'
+    +'<div style="flex:1;overflow-y:auto;padding:12px">'+bodyHtml+'</div>';
+
+  document.body.appendChild(panel);
+
+  // Wire close button
+  var closeBtn = panel.querySelector ? panel.querySelector("#qpCloseBtn") : null;
+  if (closeBtn) closeBtn.addEventListener("click", closeQuickPanel);
+
+  // Wire toggle rows - click to expand/collapse
+  var toggles = panel.querySelectorAll ? panel.querySelectorAll(".qp-emp-toggle") : [];
+  for (var ti=0; ti<toggles.length; ti++) {
+    toggles[ti].addEventListener("click", function(){
+      var taskBody = this.nextElementSibling;
+      var chevron = this.querySelector(".qp-chevron");
+      if (taskBody) {
+        var isOpen = taskBody.style.display !== "none";
+        taskBody.style.display = isOpen ? "none" : "block";
+        if (chevron) chevron.style.transform = isOpen ? "" : "rotate(180deg)";
+      }
+    });
+  }
+
+  // Wire "Open full checklist" buttons
+  var gotoBtns = panel.querySelectorAll ? panel.querySelectorAll(".qp-goto-emp") : [];
+  for (var gi=0; gi<gotoBtns.length; gi++) {
+    gotoBtns[gi].addEventListener("click", function(ev){
+      ev.stopPropagation();
+      closeQuickPanel();
+      showEmployee(this.getAttribute("data-id"));
+    });
+  }
+}
+
 
 function closeQuickPanel() {
   var panel = document.getElementById("quickPanel");
@@ -785,7 +990,7 @@ function showRemainingPanel(empId) {
 
   var html = '<div class="qp-head"><div><div class="qp-title">Remaining tasks — ' + e.name + '</div>'
     + '<div class="qp-sub">' + (total-done) + ' of ' + total + ' tasks pending</div></div>'
-    + '<button class="qp-close" onclick="closeQuickPanel()">&#10005;</button></div>'
+    + '<button id="qpCloseBtn" class="qp-close">&#10005;</button></div>'
     + '<div class="qp-body">';
 
   if (remaining.length === 0) {
@@ -822,6 +1027,8 @@ function showRemainingPanel(empId) {
   html += '</div>';
   panel.innerHTML = html;
   document.body.appendChild(panel);
+  var cb=panel.querySelector?panel.querySelector('#qpCloseBtn'):null;
+  if(cb) cb.addEventListener('click',closeQuickPanel);
 }
 
 function showOwnersPanel(empId) {
@@ -853,7 +1060,7 @@ function showOwnersPanel(empId) {
 
   var html = '<div class="qp-head"><div><div class="qp-title">Owners — ' + e.name + '</div>'
     + '<div class="qp-sub">' + Object.keys(ownerMap).length + ' owners across ' + phases.reduce(function(s,p){return s+p.tasks.length;},0) + ' tasks</div></div>'
-    + '<button class="qp-close" onclick="closeQuickPanel()">&#10005;</button></div>'
+    + '<button id="qpCloseBtn" class="qp-close">&#10005;</button></div>'
     + '<div class="qp-body">';
 
   Object.keys(ownerMap).sort().forEach(function(owner) {
@@ -878,6 +1085,8 @@ function showOwnersPanel(empId) {
   html += '</div>';
   panel.innerHTML = html;
   document.body.appendChild(panel);
+  var cb=panel.querySelector?panel.querySelector('#qpCloseBtn'):null;
+  if(cb) cb.addEventListener('click',closeQuickPanel);
 }
 
 function showDocsPanel(empId) {
@@ -892,7 +1101,7 @@ function showDocsPanel(empId) {
 
   var html = '<div class="qp-head"><div><div class="qp-title">Process Documents</div>'
     + '<div class="qp-sub">Upload & manage onboarding reference documents</div></div>'
-    + '<button class="qp-close" onclick="closeQuickPanel()">&#10005;</button></div>'
+    + '<button id="qpCloseBtn" class="qp-close">&#10005;</button></div>'
     + '<div class="qp-body">'
     + '<div class="doc-upload-area" id="docUploadArea">'
     + '<input type="file" id="docFileInput" accept=".pdf,.doc,.docx,.xlsx,.pptx,.png,.jpg" multiple />'
@@ -905,6 +1114,8 @@ function showDocsPanel(empId) {
 
   panel.innerHTML = html;
   document.body.appendChild(panel);
+  var cb=panel.querySelector?panel.querySelector('#qpCloseBtn'):null;
+  if(cb) cb.addEventListener('click',closeQuickPanel);
 
   // Wire upload area click
   var ua = document.getElementById("docUploadArea");
