@@ -1787,9 +1787,10 @@ function calcAssignmentDuration(startDate, endDate) {
   }
 }
 
-function fld(id, label, type, placeholder, required) {
-  return '<div class="fld"><label>' + label + (required ? '' : '') + '</label>'
+function fld(id, label, type, placeholder, required, value) {
+  return '<div class="fld"><label>' + label + '</label>'
     + '<input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '"'
+    + (value !== undefined && value !== null ? ' value="' + value + '"' : '')
     + (required ? ' data-required="true"' : '') + '/></div>';
 }
 
@@ -1978,25 +1979,231 @@ function val(id) {
 function showEditModal(id) {
   var e = emps[id];
   if (!e) return;
+  var type = e.type;
+  var col = TYPE_COLORS[type] || {bg:"#F0EEE9",c:"#1A1917",dot:"#6B6860"};
+
+  var badge = '<div style="display:flex;align-items:center;gap:6px;padding:8px 11px;background:'+col.bg+';border-radius:8px;margin-bottom:12px;font-size:12px;font-weight:500;color:'+col.c+'">'
+    + '<div style="width:7px;height:7px;border-radius:50%;background:'+col.dot+'"></div>' + type + '</div>';
+
+  var fields = '';
+
+  if (type === 'Local Onboarding') {
+    fields = badge
+      + fld('mName','Full name *','text','e.g. Priya Sharma',true,e.name||'')
+      + fld('mRole','Position / designation *','text','e.g. Analyst',true,e.role||'')
+      + fld('mDept','Department *','text','e.g. Finance',true,e.dept||'')
+      + fld('mDOJ','Date of joining *','date','',true,e.doj||'');
+
+  } else if (type === 'International Incoming') {
+    // Determine current transfer type base value
+    var ttBase = '';
+    if (e.transferType) {
+      if (e.transferType.indexOf('Temporary') !== -1) ttBase = 'Temporary Transfer';
+      else if (e.transferType.indexOf('Permanent') !== -1) ttBase = 'Permanent Transfer';
+    }
+    var region1 = '', region2 = '';
+    if (ttBase === 'Temporary Transfer' && e.fromRegion) region1 = e.fromRegion;
+    if (ttBase === 'Permanent Transfer' && e.fromRegion) region2 = e.fromRegion;
+
+    fields = badge
+      + fld('mName','Full name *','text','e.g. Priya Sharma',true,e.name||'')
+      + fld('mRole','Position / designation *','text','e.g. Analyst',true,e.role||'')
+      + fld('mManager','Manager *','text','e.g. Jan de Vries',true,e.manager||'')
+      + fld('mTeam','Team *','text','e.g. Equity Derivatives',true,e.team||'')
+      + fld('mDOJ','Transfer date *','date','',true,e.doj||'')
+      + radioFieldWithText('mTransferType','Transfer type *',[
+          {value:'Temporary Transfer', textId:'mTransferRegionII1', placeholder:'e.g. Netherlands, Amsterdam'},
+          {value:'Permanent Transfer',  textId:'mTransferRegionII2', placeholder:'e.g. Germany, Frankfurt'}
+        ], true)
+      + '<div id="mTempEndWrap" style="display:none">'
+      + fld('mTempEnd','Temporary assignment end date *','date','',false,e.tempEnd||'')
+      + '<div id="mAssignDays" style="display:none;margin-top:4px;padding:6px 10px;background:#E1F5EE;border-radius:8px;font-size:12px;font-weight:600;color:#065F46"></div>'
+      + '</div>';
+
+  } else if (type === 'Local Offboarding') {
+    var glChecked = e.gardenLeave && e.gardenLeave !== 'No';
+    var ncChecked = e.nonCompete && e.nonCompete !== 'No';
+    fields = badge
+      + fld('mName','Full name *','text','e.g. Priya Sharma',true,e.name||'')
+      + fld('mLWD','Last working day *','date','',true,e.lwd||e.doj||'')
+      + fld('mTermDate','Termination date *','date','',true,e.termDate||'')
+      + toggle('mGardenLeave','Garden leave?','mGardenLeaveRange','Date range')
+      + toggle('mNonCompete','Non-compete?','mNonCompeteRange','Date range');
+
+  } else if (type === 'International Outgoing') {
+    fields = badge
+      + fld('mName','Full name *','text','e.g. Priya Sharma',true,e.name||'')
+      + fld('mNextRole','Next position *','text','e.g. Head of Trading',true,e.role||'')
+      + fld('mNextManager','Next manager *','text','e.g. Sarah Klein',true,e.nextManager||'')
+      + fld('mNextTeam','Next team *','text','e.g. Amsterdam Desk',true,e.team||'')
+      + fld('mDOJ','Transfer date *','date','',true,e.doj||'')
+      + radioFieldWithText('mTransferType','Transfer type *',[
+          {value:'Return to Home Region',    textId:'mTransferRegion1', placeholder:'e.g. Netherlands'},
+          {value:'Transfer to Other Region', textId:'mTransferRegion2', placeholder:'e.g. Singapore'}
+        ], true);
+
+  } else if (type === 'Local Transfer Out') {
+    fields = badge
+      + fld('mName','Full name *','text','e.g. Priya Sharma',true,e.name||'')
+      + fld('mDOJ','Date of transfer *','date','',true,e.doj||'')
+      + fld('mNextRole','Next position *','text','e.g. Head of Trading',true,e.role||'')
+      + fld('mNextManager','Next manager *','text','e.g. Sarah Klein',true,e.nextManager||'')
+      + fld('mNextTeam','Next team *','text','e.g. Amsterdam Desk',true,e.team||'')
+      + radioFieldWithTextAndDate('mTransferType','Transfer type *',[
+          {value:'Temporary', textId:'mTransferRegionLTO1', placeholder:'e.g. Mumbai Desk, India', hasDate:true},
+          {value:'Permanent', textId:'mTransferRegionLTO2', placeholder:'e.g. Delhi Office, India', hasDate:false}
+        ], true);
+  }
+
   openModal(
     '<div class="modtitle">Edit employee</div>'
-    + '<div class="fld"><label>Full name *</label><input id="mName" value="' + e.name + '"/></div>'
-    + '<div class="fld"><label>Role / designation</label><input id="mRole" value="' + (e.role||'') + '"/></div>'
-    + '<div class="fld"><label>Department</label><input id="mDept" value="' + (e.dept||'') + '"/></div>'
-    + '<div class="fld"><label>Date of joining</label><input id="mDOJ" type="date" value="' + (e.doj||'') + '"/></div>'
+    + '<div id="editFormFields">' + fields + '</div>'
     + '<div class="mbtns">'
     + '<button class="mbtn" id="mCancel">Cancel</button>'
     + '<button class="mbtn pri" id="mConfirm">Save changes</button>'
     + '</div>'
   );
+
   document.getElementById("mCancel").addEventListener("click", closeModal);
-  document.getElementById("mConfirm").addEventListener("click", function(){
-    var name = document.getElementById("mName").value.trim();
-    if (!name) { alert("Please enter a name."); return; }
-    emps[id].name = name;
-    emps[id].role = document.getElementById("mRole").value.trim();
-    emps[id].dept = document.getElementById("mDept").value.trim();
-    emps[id].doj = document.getElementById("mDOJ").value;
+
+  // Pre-fill radio buttons
+  if (type === 'International Incoming' || type === 'International Outgoing' || type === 'Local Transfer Out') {
+    var ttVal = e.transferType || '';
+    // Extract base value (before " — ")
+    var baseVal = ttVal.indexOf(' — ') !== -1 ? ttVal.split(' — ')[0] : ttVal;
+    var radios = document.querySelectorAll("input[name='mTransferType']");
+    for (var ri = 0; ri < radios.length; ri++) {
+      if (radios[ri].value === baseVal) {
+        radios[ri].checked = true;
+        // Show the corresponding text wrap
+        var textId = radios[ri].getAttribute("data-textid");
+        if (textId) {
+          var wrap = document.getElementById(textId + "Wrap");
+          if (wrap) wrap.style.display = "block";
+          // Pre-fill region text
+          var regionEl = document.getElementById(textId);
+          if (regionEl && e.fromRegion) regionEl.value = e.fromRegion;
+          if (regionEl && e.toRegion)   regionEl.value = e.toRegion;
+        }
+        // Show temp end date wrap
+        var isTmp = baseVal === "Temporary Transfer" || baseVal === "Temporary";
+        var tempWrap = document.getElementById("mTempEndWrap");
+        if (tempWrap && isTmp) tempWrap.style.display = "block";
+        break;
+      }
+    }
+  }
+
+  // Pre-fill garden leave / non-compete toggles
+  if (type === 'Local Offboarding') {
+    var glEl = document.getElementById("mGardenLeave");
+    var ncEl = document.getElementById("mNonCompete");
+    if (glEl && e.gardenLeave && e.gardenLeave !== 'No') {
+      glEl.checked = true;
+      var glWrap = document.getElementById("mGardenLeaveRangeWrap");
+      if (glWrap) glWrap.style.display = "block";
+      var glRange = document.getElementById("mGardenLeaveRange");
+      if (glRange) glRange.value = e.gardenLeave;
+    }
+    if (ncEl && e.nonCompete && e.nonCompete !== 'No') {
+      ncEl.checked = true;
+      var ncWrap = document.getElementById("mNonCompeteRangeWrap");
+      if (ncWrap) ncWrap.style.display = "block";
+      var ncRange = document.getElementById("mNonCompeteRange");
+      if (ncRange) ncRange.value = e.nonCompete;
+    }
+  }
+
+  // Wire toggles and radio changes (same as renderAddForm)
+  renderAddForm.__wireToggles && renderAddForm.__wireToggles();
+  var allRadios = document.querySelectorAll("input[name='mTransferType']");
+  for (var ar = 0; ar < allRadios.length; ar++) {
+    allRadios[ar].addEventListener("change", function() {
+      var allWraps = ["mTransferRegion1Wrap","mTransferRegion2Wrap","mTransferRegionII1Wrap","mTransferRegionII2Wrap","mTransferRegionLTO1Wrap","mTransferRegionLTO2Wrap"];
+      allWraps.forEach(function(wid){ var w=document.getElementById(wid); if(w) w.style.display="none"; });
+      var txId = this.getAttribute("data-textid");
+      if (txId) { var tw=document.getElementById(txId+"Wrap"); if(tw) tw.style.display="block"; }
+      var isTmp = this.value==="Temporary Transfer"||this.value==="Temporary";
+      var tw2=document.getElementById("mTempEndWrap"); if(tw2) tw2.style.display=isTmp?"block":"none";
+      if (isTmp) {
+        var endEl=document.getElementById("mTempEnd");
+        if (endEl) endEl.addEventListener("change",function(){
+          var start=document.getElementById("mDOJ")?document.getElementById("mDOJ").value:"";
+          calcAssignmentDuration(start,this.value);
+        });
+      }
+    });
+  }
+  ["mGardenLeave","mNonCompete"].forEach(function(toggleId){
+    var el=document.getElementById(toggleId); if(!el) return;
+    el.addEventListener("change",function(){
+      var rId=toggleId+"Range";
+      var rWrap=document.getElementById(rId+"Wrap"); if(rWrap) rWrap.style.display=this.checked?"block":"none";
+    });
+    var rId=toggleId+"Range";
+    var fEl=document.getElementById(rId+"From");
+    var tEl=document.getElementById(rId+"To");
+    if(fEl) fEl.addEventListener("change",function(){ calcDays(rId); });
+    if(tEl) tEl.addEventListener("change",function(){ calcDays(rId); });
+  });
+
+  // Save handler - same logic as addEmp but updates existing
+  document.getElementById("mConfirm").addEventListener("click", function() {
+    var reqFields = document.querySelectorAll("[data-required='true']");
+    var missing = [];
+    for (var ri2=0; ri2<reqFields.length; ri2++) {
+      reqFields[ri2].style.borderColor="";
+      if (!reqFields[ri2].value.trim()) {
+        reqFields[ri2].style.borderColor="#DC2626";
+        var lbl=reqFields[ri2].parentElement?reqFields[ri2].parentElement.querySelector("label"):null;
+        missing.push(lbl?lbl.textContent.replace("*","").trim():reqFields[ri2].id);
+      }
+    }
+    var radioGroups={};
+    var allR=document.querySelectorAll("input[type='radio']");
+    for(var rr=0;rr<allR.length;rr++){ var nm=allR[rr].name; if(!radioGroups[nm])radioGroups[nm]=false; if(allR[rr].checked)radioGroups[nm]=true; }
+    for(var grp in radioGroups){ if(!radioGroups[grp]) missing.push("Transfer type"); }
+    var selR=document.querySelector("input[name='mTransferType']:checked");
+    var isTmp2=selR&&(selR.value==="Temporary Transfer"||selR.value==="Temporary");
+    if(isTmp2){ var te=document.getElementById("mTempEnd"); if(te&&!te.value){te.style.borderColor="#DC2626";missing.push("Temporary assignment end date");} }
+    if(missing.length>0){ alert("Please fill in req. fields: "+missing.filter(function(v,i,a){return a.indexOf(v)===i;}).join(", ")); return; }
+
+    var nameEl=document.getElementById("mName");
+    if(!nameEl||!nameEl.value.trim()){alert("Please enter a name.");return;}
+    emps[id].name=nameEl.value.trim();
+
+    var selR2=document.querySelector("input[name='mTransferType']:checked");
+    var transferType=selR2?selR2.value:"";
+
+    if(type==="Local Onboarding"){
+      emps[id].role=val("mRole"); emps[id].dept=val("mDept"); emps[id].doj=val("mDOJ");
+
+    } else if(type==="International Incoming"){
+      emps[id].role=val("mRole"); emps[id].manager=val("mManager"); emps[id].team=val("mTeam"); emps[id].dept=emps[id].team; emps[id].doj=val("mDOJ");
+      if(transferType==="Temporary Transfer"){ var r1=val("mTransferRegionII1"); emps[id].fromRegion=r1; emps[id].transferType="Temporary Transfer"+(r1?" — from "+r1:""); }
+      else if(transferType==="Permanent Transfer"){ var r2=val("mTransferRegionII2"); emps[id].fromRegion=r2; emps[id].transferType="Permanent Transfer"+(r2?" — from "+r2:""); }
+      if(isTmp2){ emps[id].tempEnd=val("mTempEnd"); var d1=new Date(emps[id].doj),d2=new Date(emps[id].tempEnd); var days=Math.round((d2-d1)/86400000); emps[id].assignmentDuration=days+" days ("+Math.round(days/30.44)+" months)"; }
+      else { delete emps[id].tempEnd; delete emps[id].assignmentDuration; }
+
+    } else if(type==="Local Offboarding"){
+      emps[id].lwd=val("mLWD"); emps[id].doj=emps[id].lwd; emps[id].termDate=val("mTermDate");
+      var glEl2=document.getElementById("mGardenLeave"); var ncEl2=document.getElementById("mNonCompete");
+      emps[id].gardenLeave=(glEl2&&glEl2.checked)?(val("mGardenLeaveRange")||"Yes"):"No";
+      emps[id].nonCompete=(ncEl2&&ncEl2.checked)?(val("mNonCompeteRange")||"Yes"):"No";
+
+    } else if(type==="International Outgoing"){
+      emps[id].role=val("mNextRole"); emps[id].nextManager=val("mNextManager"); emps[id].team=val("mNextTeam"); emps[id].dept=emps[id].team; emps[id].doj=val("mDOJ");
+      if(transferType==="Return to Home Region"){ var r3=val("mTransferRegion1"); emps[id].transferType="Return to Home Region"+(r3?" — "+r3:""); }
+      else if(transferType==="Transfer to Other Region"){ var r4=val("mTransferRegion2"); emps[id].transferType="Transfer to Other Region"+(r4?" — "+r4:""); }
+
+    } else if(type==="Local Transfer Out"){
+      emps[id].doj=val("mDOJ"); emps[id].role=val("mNextRole"); emps[id].nextManager=val("mNextManager"); emps[id].team=val("mNextTeam"); emps[id].dept=emps[id].team;
+      if(transferType==="Temporary"){ var r5=val("mTransferRegionLTO1"); emps[id].toRegion=r5; emps[id].transferType="Temporary"+(r5?" — "+r5:""); }
+      else if(transferType==="Permanent"){ var r6=val("mTransferRegionLTO2"); emps[id].toRegion=r6; emps[id].transferType="Permanent"+(r6?" — "+r6:""); }
+      if(isTmp2){ emps[id].tempEnd=val("mTempEnd"); var d1b=new Date(emps[id].doj),d2b=new Date(emps[id].tempEnd); var db=Math.round((d2b-d1b)/86400000); emps[id].assignmentDuration=db+" days ("+Math.round(db/30.44)+" months)"; }
+      else { delete emps[id].tempEnd; delete emps[id].assignmentDuration; }
+    }
+
     saveData();
     closeModal();
     showEmployee(id);
