@@ -208,54 +208,41 @@ var AV_PAL = [
 
 var CHECKLISTS = {
 "Local Onboarding": [
-  {phase:"Pre onboarding", tasks:[
-    {id:"lo1",n:1,own:"Employee",tl:"Ongoing",cat:"Relocation",t:"Raise reimbursement request on Workday if relocation allowance was paid in advance."},
-    {id:"lo2",n:2,own:"Finance",tl:"On receipt of email",cat:"Insurance",t:"Update employee and dependent details in insurance records."},
-    {id:"lo3",n:3,own:"Finance",tl:"On receipt of email",cat:"PF Passbook",t:"Update the employee's PF passbook details on the EPFO portal."},
-    {id:"lo4",n:4,own:"Finance",tl:"Near to DOJ",cat:"ADP Enrolment",t:"Update employee records in the ADP portal."},
-    {id:"lo5",n:5,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Communication",t:"Confirm DOJ with candidate and inform about HireRight as BGV vendor."},
-    {id:"lo6",n:6,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Tracker Update",t:"Update the respective columns in the Employee Onboarding Checklist."},
-    {id:"lo7",n:7,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Calendar",t:"Block calendar with Compliance, IT, and Jocelyn for onboarding coordination."},
-    {id:"lo8",n:8,own:"HR Operations",tl:"On receipt from Recruitment",cat:"Calendar",t:"Block calendar with stakeholders for induction sessions."},
-    {id:"lo9",n:9,own:"HR Operations",tl:"2 weeks prior to DOJ",cat:"Communication",t:"Email candidate to collect insurance, PF passbook, Connect post, and laptop preference."},
-    {id:"lo10",n:10,own:"HR Operations",tl:"2 weeks prior to DOJ",cat:"Communication",t:"Share the Onboarding Plan with the Buddy or Manager via email."},
-    {id:"lo11",n:11,own:"HR Operations",tl:"2 days prior to joining",cat:"Communication",t:"Email candidate with joining details, Day 1 plan, and point-of-contact information."},
-    {id:"lo12",n:12,own:"HR Operations",tl:"Ongoing",cat:"Workday",t:"Complete all pending Workday activities."},
-    {id:"lo13",n:13,own:"HR Operations",tl:"Ongoing",cat:"Workday",t:"Initiate and close the BGV from the Workday task."},
-    {id:"lo14",n:14,own:"HR Operations",tl:"Ongoing",cat:"Relocation",t:"Initiate relocation email covering flights and accommodation."},
-    {id:"lo15",n:15,own:"HR Operations",tl:"On receipt of email",cat:"Connect Post",t:"Create the Connect post on Canva and upload to the Connect platform."},
-    {id:"lo16",n:16,own:"HR Operations",tl:"On receipt of email",cat:"Insurance",t:"Share candidate's insurance details with Finance (Pooja Parab)."},
-    {id:"lo17",n:17,own:"HR Operations",tl:"On receipt of email",cat:"PF Passbook",t:"Follow up with candidate to share their PF passbook details."},
-    {id:"lo18",n:18,own:"HR Operations",tl:"Near to DOJ",cat:"POSH Training",t:"Obtain the POSH training login credentials from the vendor."},
-    {id:"lo19",n:19,own:"HR Operations",tl:"Near to DOJ",cat:"Desk Allocation",t:"Confirm seating arrangement with manager and inform Facility team."},
-    {id:"lo20",n:20,own:"Neha",tl:"Ongoing",cat:"Relocation",t:"Carry out and close all relocation-related activities."},
-    {id:"lo21",n:21,own:"Recruitment Team",tl:"On Hire",cat:"Communication",t:"Share offer packet, confirm relocation eligibility and traineeship details."},
-    {id:"lo22",n:22,own:"Recruitment Team",tl:"On Hire",cat:"Tracker Update",t:"Update the Employee Onboarding Checklist with relevant details."}
+  {phase:"Pre joining — Upon hire confirmation", tasks:[
+    {id:"lo1",n:1,own:"HR Ops & Recruitment",tl:"Upon hire confirmation",dlOffset:null,cat:"Tracker",t:"Update Employee Onboarding Pipeline Checklist in Box. Jointly maintained tracker."},
+    {id:"lo2",n:2,own:"HR Ops Associate",tl:"Upon receipt of Email 2 from Recruitment",dlOffset:null,cat:"Communication",t:"Call candidate: introduce HR Ops as POC, inform about HireRight BGV vendor and in-person visit process."},
+    {id:"lo3",n:3,own:"HR Ops Associate",tl:"Same day as initial call",dlOffset:null,cat:"Communication",t:"Send summary email to candidate with DOJ and BGV vendor details. Refer Email 1 draft – Confluence."},
+    {id:"lo4",n:4,own:"HR Ops Associate",tl:"Upon hire confirmation",dlOffset:null,cat:"Relocation",t:"Send relocation email to Travel Desk (CC: candidate & Neha Sawant) — if applicable. Refer Confluence for draft & attachments."},
+    {id:"lo5",n:5,own:"HR Ops Associate",tl:"Immediately upon DOJ confirmation",dlOffset:null,cat:"Calendar",t:"Block calendar for candidate's DOJ."},
+    {id:"lo6",n:6,own:"HR Ops Associate",tl:"Immediately upon DOJ confirmation",dlOffset:null,cat:"Communication",t:"Notify MD, HR Team (excl. Recruitment), Compliance, IT & Facility Team with new joiner details. Include: joining date, job profile, team."}
   ]},
-  {phase:"Onboarding - Day 1", tasks:[
-    {id:"lo23",n:23,own:"Facility",tl:"On the DOJ",cat:"Welcome Kit",t:"Arrange welcome kit on designated desk before new joiner arrives."},
-    {id:"lo24",n:24,own:"HR Operations",tl:"On the DOJ",cat:"Office Tour",t:"Conduct an office tour for the new joiner."},
-    {id:"lo25",n:25,own:"HR Operations",tl:"On the DOJ",cat:"Induction",t:"Conduct all induction sessions for the new joiner."},
-    {id:"lo26",n:26,own:"HR Operations",tl:"On the DOJ",cat:"HR Induction",t:"Conduct HR Induction covering Workday and system orientation."},
-    {id:"lo27",n:27,own:"HR Operations",tl:"On the DOJ",cat:"Payroll Induction",t:"Carry out Payroll and Benefits induction for the new joiner."},
-    {id:"lo28",n:28,own:"HR Operations",tl:"On the DOJ",cat:"Connect Post",t:"Verify that the Connect post is live and active."},
-    {id:"lo29",n:29,own:"HR Operations",tl:"On the DOJ",cat:"Channel Addition",t:"Add new joiner to WhatsApp group, DLU distribution list, and Mattermost."},
-    {id:"lo30",n:30,own:"HR Operations",tl:"On the DOJ",cat:"Box Folder",t:"Copy candidate's Box folder from Recruitment to HR Compensation folder."},
-    {id:"lo31",n:31,own:"HR Operations",tl:"On the DOJ",cat:"Onboarding Plan",t:"Share the complete onboarding plan with the new joiner."},
-    {id:"lo32",n:32,own:"HR Operations",tl:"On the DOJ",cat:"POSH Certificate",t:"Share POSH training login credentials with the new joiner."},
-    {id:"lo33",n:33,own:"HR Operations",tl:"On the DOJ",cat:"Audit Induction",t:"Email Edjaz to add new joiner for the Audit Induction session."},
-    {id:"lo34",n:34,own:"HRBP",tl:"On the DOJ",cat:"HRBP Connect",t:"Facilitate the HRBP's introductory connect with the new joiner."},
-    {id:"lo35",n:35,own:"IT Team",tl:"On the DOJ",cat:"IT Allocation",t:"Complete the IT setup for the new joiner."},
-    {id:"lo36",n:36,own:"Travel Desk",tl:"On the DOJ",cat:"Ola and Uber",t:"Grant Ola and Uber access to the new joiner's email ID."}
+  {phase:"Pre joining — D-14 days", tasks:[
+    {id:"lo7",n:7,own:"HR Ops Associate",tl:"D-14 days",dlOffset:-14,cat:"Onboarding Plan",t:"Request Hiring Manager to prepare & submit onboarding plan (key meetings, functional onboarding, 3-month goals). Refer Onboarding Plan draft – Confluence."},
+    {id:"lo8",n:8,own:"HR Ops Associate",tl:"D-14 days",dlOffset:-14,cat:"Communication",t:"Send Welcome Email to candidate to collect & confirm key details (CC: Facilities, Payroll). Refer Email 2 draft – Confluence."},
+    {id:"lo9",n:9,own:"HR Ops Associate",tl:"D-14 days",dlOffset:-14,cat:"Workday",t:"Complete all required Workday tasks; resolve any discrepancies with Recruitment Team. Document changes via addendum if DOJ/benefits change."},
+    {id:"lo10",n:10,own:"HR Ops Associate",tl:"D-14 days",dlOffset:-14,cat:"BGV",t:"Initiate BGV via Workday; if not triggered automatically, initiate manually via HireRight portal. Second step in Workday hire process."}
   ]},
-  {phase:"Post onboarding - 1st month", tasks:[
-    {id:"lo37",n:37,own:"HR Operations",tl:"Within 1st month",cat:"CHRO Connect",t:"Schedule a monthly connect session between the new joiner and the CHRO."},
-    {id:"lo38",n:38,own:"HR Operations",tl:"Within 1st month",cat:"Compliance Induction",t:"Conduct Compliance Induction for the new joiner."},
-    {id:"lo39",n:39,own:"HR Operations",tl:"Within 1st month",cat:"Risk Induction",t:"Conduct Risk Induction for the new joiner."},
-    {id:"lo40",n:40,own:"HR Operations",tl:"Within 1st month",cat:"Legal Induction",t:"Conduct Legal Induction for the new joiner."},
-    {id:"lo41",n:41,own:"HR Operations",tl:"Within 1st month",cat:"Info Sec Induction",t:"Conduct Information Security Induction for the new joiner."},
-    {id:"lo42",n:42,own:"HR Operations",tl:"Within 1st month",cat:"POSH Certificate",t:"Download and save the POSH training completion certificate."},
-    {id:"lo43",n:43,own:"HR Operations",tl:"Within 1st month",cat:"BGV Report",t:"Save the BGV completion report in the employee's Box folder."}
+  {phase:"Pre joining — D-7 days", tasks:[
+    {id:"lo11",n:11,own:"HR Ops Associate",tl:"D-7 days",dlOffset:-7,cat:"Induction",t:"Schedule first-day induction."},
+    {id:"lo12",n:12,own:"HR Ops Associate",tl:"D-7 days",dlOffset:-7,cat:"Audit",t:"Email Internal Audit Team to include new joiner in next available induction."},
+    {id:"lo13",n:13,own:"HR Ops Associate",tl:"D-7 days",dlOffset:-7,cat:"Mandatory Inductions",t:"Schedule / add new joiner to monthly mandatory inductions: InfoSec Induction, Compliance Induction, Risk Induction."},
+    {id:"lo14",n:14,own:"HR Ops Associate",tl:"D-7 days",dlOffset:-7,cat:"Communication",t:"Send Final Email to candidate with: Office Address, Reporting Time, Whom to Meet on Arrival, Day 1 Onboarding Plan. Refer Email 3 draft – Confluence."},
+    {id:"lo15",n:15,own:"HR Ops Associate",tl:"D-7 days",dlOffset:-7,cat:"Connect Post",t:"Prepare Connect introduction post based on candidate's Email 2 response; schedule posting for Day 1. Refer Connect Portal & Canva draft for formatting."}
+  ]},
+  {phase:"Day 1", tasks:[
+    {id:"lo16",n:16,own:"Office Management / HR Ops",tl:"Before new joiner arrives",dlOffset:0,cat:"Welcome Kit",t:"Coordinate with front desk to place onboarding kit at new joiner's desk before arrival."},
+    {id:"lo17",n:17,own:"IT Team",tl:"Confirmed before Day 1",dlOffset:0,cat:"IT Setup",t:"Ensure IT has set up all systems, tools & access for new joiner."},
+    {id:"lo18",n:18,own:"HR Ops Associate",tl:"Day 1 — on arrival",dlOffset:0,cat:"Office Tour",t:"Meet new joiner on arrival; provide office tour and show to their desk."},
+    {id:"lo19",n:19,own:"HR Ops Associate",tl:"Day 1 — morning",dlOffset:0,cat:"Connect Post",t:"Verify introduction post is published on Connect; share link to IMC India Mattermost group."},
+    {id:"lo20",n:20,own:"IT (via HR Ops – Varun Dumbre)",tl:"Day 1",dlOffset:0,cat:"Mattermost",t:"Add new joiner to Mattermost India Office group."},
+    {id:"lo21",n:21,own:"HR Ops Associate (Neha Sawant)",tl:"Day 1",dlOffset:0,cat:"WhatsApp",t:"Add new joiner to WhatsApp group."},
+    {id:"lo22",n:22,own:"IT (via HR Ops – Varun Dumbre)",tl:"Day 1",dlOffset:0,cat:"DLU",t:"Add new joiner to DLU mailing list."},
+    {id:"lo23",n:23,own:"HR Ops Associate",tl:"Day 1",dlOffset:0,cat:"Box Folder",t:"Move candidate's Box folder: Recruitment → Current Employee (For interns: copy folder to retain in both)."},
+    {id:"lo24",n:24,own:"HR Ops Associate",tl:"Day 1",dlOffset:0,cat:"POSH Training",t:"Assign POSH training credentials — email Comply Karo (trupti@complykaro.com); share credentials with new joiner. Annual certification required for all employees."},
+    {id:"lo25",n:25,own:"Travel & Accommodation",tl:"Day 1",dlOffset:0,cat:"Ola & Uber",t:"Activate Ola and Uber accounts for new joiner."},
+    {id:"lo26",n:26,own:"Payroll",tl:"Day 1",dlOffset:0,cat:"Benefits",t:"Guide employee on benefit submissions; ensure Mediclaim enrollment; complete ADP portal enrollment."},
+    {id:"lo27",n:27,own:"HR Ops Associate",tl:"End of Day 1",dlOffset:0,cat:"Wrap-up Email",t:"Send end-of-day wrap-up email with complete onboarding plan, Mediclaim deck & benefit documents."},
+    {id:"lo28",n:28,own:"HR Ops Associate",tl:"Day 1 (as received)",dlOffset:0,cat:"Documentation",t:"Save BGV report & POSH Training certification in employee's Box folder."}
   ]}
 ],
 "International Incoming": [
@@ -867,7 +854,13 @@ function showEmployee(id) {
       var isDone = !!ch[task.id];
       var tm = (e.taskMeta && e.taskMeta[task.id]) ? e.taskMeta[task.id] : {};
       var assignee = tm.assignee || task.own;
+      // Auto-calculate deadline from dlOffset + DOJ if not manually set
       var deadline = tm.deadline || '';
+      if (!deadline && task.dlOffset !== null && task.dlOffset !== undefined && e.doj) {
+        var doj = new Date(e.doj);
+        doj.setDate(doj.getDate() + task.dlOffset);
+        deadline = doj.toISOString().slice(0,10);
+      }
       var dlClass = 'none', dlTxt = 'Set deadline';
       if (deadline) {
         var today = new Date(); today.setHours(0,0,0,0);
@@ -891,9 +884,11 @@ function showEmployee(id) {
         + '</div>'
         + '<span class="tag tagl">' + task.tl + '</span>'
         + '<span class="tag tagc">' + task.cat + '</span>'
-        + '<span class="task-deadline ' + dlClass + '">'
-        + (deadline ? dlTxt : '<input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="' + deadline + '" title="Set deadline" />')
-        + (deadline ? ' <input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="' + deadline + '" title="Change deadline" style="width:0;opacity:0;position:absolute" />' : '')
+        + '<span class="task-deadline ' + dlClass + '" title="' + (task.dlOffset !== null && task.dlOffset !== undefined && !tm.deadline && e.doj ? 'Auto-calculated from DOJ' : 'Deadline') + '">'
+        + (deadline
+            ? dlTxt + (task.dlOffset !== null && task.dlOffset !== undefined && !tm.deadline ? ' <span style="font-size:9px;opacity:.6">(D' + (task.dlOffset < 0 ? task.dlOffset : task.dlOffset === 0 ? '' : '+'+task.dlOffset) + ')</span>' : '')
+            + ' <input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="' + deadline + '" title="Override deadline" style="width:0;opacity:0;position:absolute" />'
+            : '<input type="date" class="dl-picker" data-empid="' + id + '" data-taskid="' + task.id + '" value="" title="Set deadline" />')
         + '</span>'
         + '</div>'
         + '<div class="comment-bubble' + (dlClass==='overdue' ? ' overdue-comment' : ' info-comment') + '" id="cbubble_' + id + '_' + task.id + '" style="display:' + (comment ? 'flex' : 'none') + '">'
